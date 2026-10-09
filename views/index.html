@@ -9,7 +9,7 @@
     <style>
         :root {
             --bg-deep: #020408;
-            --bg-panel: rgba(8, 13, 24, 0.95);
+            --bg-panel: rgba(8, 13, 24, 0.96);
             --border-glow: rgba(56, 189, 248, 0.4);
             --accent-cyan: #38bdf8;
             --accent-neon: #a855f7;
@@ -39,7 +39,7 @@
         }
 
         .sidebar {
-            width: 310px;
+            width: 320px;
             background: rgba(4, 7, 12, 0.98);
             backdrop-filter: blur(25px);
             border-left: 1px solid rgba(255, 255, 255, 0.06);
@@ -108,8 +108,6 @@
             border-color: rgba(56, 189, 248, 0.15);
             transform: translateX(-4px);
         }
-
-        .sidebar-menu li:hover i { transform: scale(1.2); }
 
         .sidebar-menu li.active {
             background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
@@ -212,56 +210,36 @@
             gap: 12px;
         }
 
-        .servers-grid {
+        .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 20px;
             margin-bottom: 25px;
         }
 
-        .server-card {
+        .action-card {
             background: rgba(3, 6, 12, 0.85);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px;
             padding: 22px;
+            position: relative;
             transition: 0.3s;
         }
 
-        .server-card:hover {
+        .action-card:hover {
             border-color: var(--accent-cyan);
-            transform: translateY(-4px);
             box-shadow: 0 10px 30px rgba(56, 189, 248, 0.2);
         }
 
-        .server-header {
+        .card-top {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
-        .server-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: #1e293b;
-            border: 2px solid var(--accent-cyan);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            color: #fff;
-        }
-
-        .server-info h4 { color: #fff; font-size: 16px; margin-bottom: 4px; }
-        .server-status { font-size: 12px; color: var(--accent-green); display: flex; align-items: center; gap: 6px; }
-
-        .input-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
+        .card-title { font-size: 16px; font-weight: 700; color: #fff; }
+        .card-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 15px; }
 
         .form-group { margin-bottom: 18px; }
         .form-group label {
@@ -283,33 +261,12 @@
             transition: 0.3s;
         }
 
-        .god-textarea { height: 120px; resize: none; }
+        .god-textarea { height: 110px; resize: none; }
 
         .god-input:focus, .god-textarea:focus, .god-select:focus {
             outline: none;
             border-color: var(--accent-cyan);
             box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
-        }
-
-        .image-upload-box {
-            border: 2px dashed rgba(56, 189, 248, 0.3);
-            background: rgba(2, 4, 8, 0.5);
-            padding: 25px;
-            border-radius: 14px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .image-upload-box:hover {
-            border-color: var(--accent-cyan);
-            background: rgba(56, 189, 248, 0.05);
-        }
-
-        .image-upload-box i {
-            font-size: 32px;
-            color: var(--accent-cyan);
-            margin-bottom: 10px;
         }
 
         .god-btn {
@@ -338,23 +295,6 @@
             box-shadow: 0 5px 20px rgba(220, 38, 38, 0.4);
         }
 
-        .modules-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .module-card {
-            background: rgba(3, 6, 12, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
         .switch {
             position: relative;
             display: inline-block;
@@ -374,29 +314,30 @@
         input:checked + .slider { background-color: var(--accent-cyan); }
         input:checked + .slider:before { transform: translateX(24px); }
 
-        .payment-methods {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        .tabs-header {
+            display: flex;
             gap: 15px;
-            margin-top: 20px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding-bottom: 15px;
         }
 
-        .pay-card {
-            background: rgba(3, 6, 12, 0.8);
-            border: 2px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            padding: 20px;
-            text-align: center;
+        .tab-btn {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: var(--text-muted);
+            padding: 10px 20px;
+            border-radius: 10px;
             cursor: pointer;
+            font-weight: 700;
             transition: 0.3s;
         }
 
-        .pay-card:hover, .pay-card.selected {
+        .tab-btn.active, .tab-btn:hover {
+            background: var(--accent-cyan);
+            color: #000;
             border-color: var(--accent-cyan);
-            box-shadow: 0 10px 25px rgba(56, 189, 248, 0.3);
         }
-
-        .pay-card i { font-size: 30px; color: var(--accent-cyan); margin-bottom: 10px; }
 
         #god-toast {
             position: fixed;
@@ -412,12 +353,6 @@
             box-shadow: 0 15px 40px rgba(0,0,0,0.7), 0 0 25px rgba(56, 189, 248, 0.4);
             display: none;
             z-index: 1000;
-            animation: godPopup 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes godPopup {
-            from { transform: translateY(30px) scale(0.9); opacity: 0; }
-            to { transform: translateY(0) scale(1); opacity: 1; }
         }
     </style>
 </head>
@@ -428,32 +363,32 @@
             <i class="fa-solid fa-crown" style="color: var(--accent-gold);"></i> RKO // SUPREME
         </div>
         <ul class="sidebar-menu">
-            <div class="menu-category">التحكم العام</div>
-            <li onclick="switchView('servers', this)"><i class="fa-solid fa-server"></i> إدارة السيرفرات <span class="badge-god">ACTIVE</span></li>
-            <li onclick="switchView('overview', this)"><i class="fa-solid fa-chart-pie"></i> نظرة عامة وحية</li>
-            <li onclick="switchView('premium', this)"><i class="fa-solid fa-gem" style="color: var(--accent-cyan);"></i> البريميوم والاشتراكات <span class="badge-god">APPLE PAY</span></li>
-            <li onclick="switchView('modules', this)"><i class="fa-solid fa-cubes"></i> إدارة الوحدات والمميزات</li>
+            <div class="menu-category">الإعدادات العامة</div>
+            <li onclick="switchView('overview', this)"><i class="fa-solid fa-chart-pie"></i> نظرة عامة</li>
+            <li onclick="switchView('premium', this)"><i class="fa-solid fa-gem" style="color: var(--accent-cyan);"></i> البريميوم <span class="badge-god">PRO</span></li>
+            <li onclick="switchView('custombot', this)"><i class="fa-solid fa-robot" style="color: var(--accent-gold);"></i> تخصيص البوت <span class="badge-god">NEW</span></li>
 
-            <div class="menu-category">الأنظمة الإمبراطورية</div>
-            <li class="active" onclick="switchView('tickets', this)"><i class="fa-solid fa-headset" style="color: var(--accent-cyan);"></i> مركز التذاكر الخارق <span class="badge-god">IMAGE</span></li>
-            <li onclick="switchView('broadcast', this)"><i class="fa-solid fa-bullhorn"></i> مركز البرودكاست الحربي</li>
-            <li onclick="switchView('customcmd', this)"><i class="fa-solid fa-terminal" style="color: var(--accent-neon);"></i> الأوامر المخصصة</li>
-
-            <div class="menu-category">الأمن والحماية</div>
-            <li onclick="switchView('antinuke', this)"><i class="fa-solid fa-shield-halved" style="color: var(--accent-red);"></i> جدار حماية Anti-Nuke</li>
-            <li onclick="switchView('auditlogs', this)"><i class="fa-solid fa-shield-cat"></i> رادار السجلات الحية <span class="badge-god">PRO</span></li>
+            <div class="menu-category">الرقابة والإشراف</div>
+            <li class="active" onclick="switchView('antinuke', this)"><i class="fa-solid fa-shield-halved" style="color: var(--accent-red);"></i> الحماية (Anti-Nuke)</li>
+            <li onclick="switchView('moderation', this)"><i class="fa-solid fa-gavel"></i> أدوات الإشراف</li>
+            <li onclick="switchView('verification', this)"><i class="fa-solid fa-user-check"></i> التحقق</li>
+            <li onclick="switchView('auditlogs', this)"><i class="fa-solid fa-list-check"></i> سجلات الأحداث (Logs)</li>
 
             <div class="menu-category">المجتمع والتفاعل</div>
-            <li onclick="switchView('welcome', this)"><i class="fa-solid fa-door-open"></i> الترحيب السينمائي <span class="badge-god">DM</span></li>
-            <li onclick="switchView('levels', this)"><i class="fa-solid fa-fire" style="color: #f97316;"></i> نظام التفاعل والمستويات</li>
-            <li onclick="switchView('staffroles', this)"><i class="fa-solid fa-user-shield" style="color: var(--accent-gold);"></i> صلاحيات لوحة التحكم</li>
+            <li onclick="switchView('welcome', this)"><i class="fa-solid fa-door-open"></i> الترحيب والمغادرة</li>
+            <li onclick="switchView('levels', this)"><i class="fa-solid fa-fire" style="color: #f97316;"></i> نظام المستويات (Leveling)</li>
+            <li onclick="switchView('giveaways', this)"><i class="fa-solid fa-gift"></i> السحوبات (Giveaways)</li>
+            <li onclick="switchView('autorank', this)"><i class="fa-solid fa-id-card"></i> إدارة الرتب</li>
+
+            <div class="menu-category">التخصيص</div>
+            <li onclick="switchView('voice', this)"><i class="fa-solid fa-microphone"></i> القنوات الصوتية المؤقتة</li>
         </ul>
     </div>
 
     <div class="main-wrapper">
         <header>
             <div class="header-title">
-                لوحة القيادة السيادية لـ RKO / <span id="header-tracker">مركز التذاكر الخارق</span>
+                لوحة القيادة السيادية لـ RKO / <span id="header-tracker">الحماية (Anti-Nuke)</span>
             </div>
             <div class="user-badge">
                 <div class="avatar-glow"></div>
@@ -463,226 +398,214 @@
 
         <div class="content-area">
             
-            <!-- 1. إدارة السيرفرات -->
-            <div id="servers" class="section-view">
+            <!-- 1. تخصيص البوت (Custom Bot) -->
+            <div id="custombot" class="section-view">
                 <div class="god-panel">
-                    <h3><i class="fa-solid fa-server"></i> السيرفرات النشطة وتحت إدارتك</h3>
-                    <div class="servers-grid">
-                        <div class="server-card">
-                            <div class="server-header">
-                                <div class="server-avatar">977</div>
-                                <div class="server-info">
-                                    <h4>Addons 977</h4>
-                                    <div class="server-status"><i class="fa-solid fa-circle" style="font-size:8px;"></i> نشط ومتصل</div>
-                                </div>
-                            </div>
-                            <button class="god-btn" style="width:100%; justify-content:center;" onclick="showGodToast('⚡ تم الدخول إلى لوحة سيرفر Addons 977!')">إدارة السيرفر</button>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div>
+                            <h3 style="margin-bottom: 5px;"><i class="fa-solid fa-robot"></i> البوت المخصص</h3>
+                            <p style="color: var(--text-muted); font-size: 13px;">منح ZMN اسماً وصورةً ونابذاً خاصة به في هذا السيرفر.</p>
                         </div>
+                        <label class="switch"><input type="checkbox" checked onchange="showGodToast('تم تفعيل البوت المخصص!')"><span class="slider"></span></label>
                     </div>
-                </div>
-            </div>
 
-            <!-- 2. نظرة عامة -->
-            <div id="overview" class="section-view">
-                <div class="god-panel">
-                    <h3><i class="fa-solid fa-bolt" style="color: var(--accent-cyan);"></i> غرفة العمليات الحية</h3>
-                    <p style="color: var(--text-muted);">جميع أنظمة RKO متصلة وتعمل بكفاءة تامة 100%.</p>
-                </div>
-            </div>
+                    <div style="background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.3); padding: 18px; border-radius: 14px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4 style="color: var(--accent-gold); margin-bottom: 5px;"><i class="fa-solid fa-crown"></i> ملف البوت الخاص بكل سيرفر ميزة بريميوم</h4>
+                            <p style="font-size: 12px; color: var(--text-muted);">قم بالترقية لمنح ZMN اسماً وصورةً ونابذاً خاصة به في هذا السيرفر.</p>
+                        </div>
+                        <button class="god-btn" style="background: var(--accent-cyan); color: #000;" onclick="showGodToast('جاري فتح نافذة البريميوم...')">عرض البريميوم</button>
+                    </div>
 
-            <!-- 3. البريميوم والدفع عبر Apple Pay -->
-            <div id="premium" class="section-view">
-                <div class="god-panel">
-                    <h3><i class="fa-solid fa-gem"></i> باقات البريميوم والدفع عبر Apple Pay</h3>
-                    <div style="font-size:26px; font-weight:900; color:var(--accent-cyan); margin-bottom:15px;">
-                        18.75 ر.س <span style="font-size:14px; color:var(--text-muted);">/ شهرياً</span>
-                    </div>
-                    <div class="form-group">
-                        <label>كود الخصم أو التفعيل</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="text" class="god-input" placeholder="أدخل الكود هنا">
-                            <button class="god-btn" onclick="showGodToast('تم تطبيق الكود بنجاح!')">تطبيق</button>
-                        </div>
-                    </div>
-                    <div class="payment-methods">
-                        <div class="pay-card selected" onclick="showGodToast('تم اختيار Apple Pay')">
-                            <i class="fa-brands fa-apple-pay"></i>
-                            <div style="color:#fff; font-weight:700;">Apple Pay</div>
-                        </div>
-                    </div>
-                    <button class="god-btn" style="width:100%; justify-content:center; margin-top:20px; background:linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color:#000;" onclick="showGodToast('🍏 جاري فتح نافذة Apple Pay للدفع الفوري!')">
-                        <i class="fa-brands fa-apple-pay" style="font-size:22px;"></i> اشتراك الآن
-                    </button>
-                </div>
-            </div>
-
-            <!-- 4. إدارة الوحدات -->
-            <div id="modules" class="section-view">
-                <div class="god-panel">
-                    <h3><i class="fa-solid fa-cubes"></i> إدارة وتفعيل وحدات ومميزات RKO</h3>
-                    <div class="modules-grid">
-                        <div class="module-card">
-                            <div><h4>🛡️ الحماية (Anti-Nuke)</h4><p>حماية القنوات والرتب</p></div>
-                            <label class="switch"><input type="checkbox" checked onchange="showGodToast('تم تحديث الحماية!')"><span class="slider"></span></label>
-                        </div>
-                        <div class="module-card">
-                            <div><h4>🎫 التذاكر (Tickets)</h4><p>دعم فني وتذاكر تلقائية</p></div>
-                            <label class="switch"><input type="checkbox" checked onchange="showGodToast('تم تحديث التذاكر!')"><span class="slider"></span></label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 5. مركز التذاكر الخارق (مع رفع الصور والبانر الكامل) -->
-            <div id="tickets" class="section-view active">
-                <div class="god-panel">
-                    <h3><i class="fa-solid fa-headset"></i> مركز التذاكر والدعم الفني المتقدم (Tickets Suite)</h3>
                     <div class="input-grid">
                         <div class="form-group">
-                            <label>عنوان لوحة التذاكر (Embed Title)</label>
-                            <input type="text" class="god-input" value="🎫 مركز الدعم الفني لـ RKO">
+                            <label>اللقب (0/32)</label>
+                            <input type="text" class="god-input" placeholder="اسم ZMN في هذا السيرفر (اتركه فارغاً لاستخدام اسم ZMN)">
                         </div>
                         <div class="form-group">
-                            <label>قناة إرسال لوحة التذاكر (Channel)</label>
-                            <select class="god-select">
-                                <option># 🎫-tickets (التذاكر الرسمية)</option>
-                                <option># 📢-support (الدعم العام)</option>
-                            </select>
+                            <label>نبذة عني (0/190)</label>
+                            <textarea class="god-textarea" placeholder="ما يراه الأعضاء في ملف ZMN بهذا السيرفر"></textarea>
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <label>الصورة الشخصية (مربعة، 256x256 على الأقل، PNG أو JPG أو GIF أو WebP حتى 8 ميجابايت. استخدم GIF للصور المتحركة)</label>
+                        <button class="god-btn" onclick="showGodToast('جاري رفع الصورة الشخصية للبوت...')"><i class="fa-solid fa-upload"></i> اختر صورة</button>
+                    </div>
+
+                    <button class="god-btn" style="margin-top: 15px;" onclick="showGodToast('✨ تم حفظ إعدادات البوت المخصص بنجاح!')">حفظ التغييرات</button>
+                </div>
+            </div>
+
+            <!-- 2. الحماية (Anti-Nuke) -->
+            <div id="antinuke" class="section-view active">
+                <div class="tabs-header">
+                    <button class="tab-btn active" onclick="showGodToast('سجل الحالات')">سجل الحالات</button>
+                    <button class="tab-btn" onclick="showGodToast('الإجراءات الفورية')">الإجراءات الفورية</button>
+                    <button class="tab-btn" onclick="showGodToast('حدود العمليات')">حدود العمليات</button>
+                </div>
+
+                <div class="god-panel">
+                    <h3><i class="fa-solid fa-shield-halved" style="color: var(--accent-red);"></i> نظام الحماية والعمليات الفورية ضد التخريب</h3>
+                    
+                    <div class="cards-grid">
+                        <div class="action-card">
+                            <div class="card-top">
+                                <span class="card-title">حذف رتب</span>
+                                <label class="switch"><input type="checkbox" checked onchange="showGodToast('تم تحديث حماية حذف الرتب')"><span class="slider"></span></label>
+                            </div>
+                            <div class="card-desc">عقوبة عند حذف عدد كبير من الرتب في وقت قصير.</div>
+                            <button class="god-btn" style="width:100%; justify-content:center; padding:10px;" onclick="showGodToast('إدارة إعدادات حذف الرتب')"><i class="fa-solid fa-gear"></i> إدارة</button>
+                        </div>
+
+                        <div class="action-card">
+                            <div class="card-top">
+                                <span class="card-title">إنشاء رتب</span>
+                                <label class="switch"><input type="checkbox" checked onchange="showGodToast('تم تحديث حماية إنشاء الرتب')"><span class="slider"></span></label>
+                            </div>
+                            <div class="card-desc">عقوبة عند إنشاء عدد كبير من الرتب في وقت قصير.</div>
+                            <button class="god-btn" style="width:100%; justify-content:center; padding:10px;" onclick="showGodToast('إدارة إعدادات إنشاء الرتب')"><i class="fa-solid fa-gear"></i> إدارة</button>
+                        </div>
+
+                        <div class="action-card">
+                            <div class="card-top">
+                                <span class="card-title">الطرد الجماعي</span>
+                                <label class="switch"><input type="checkbox" checked onchange="showGodToast('تم تحديث حماية الطرد الجماعي')"><span class="slider"></span></label>
+                            </div>
+                            <div class="card-desc">عقوبة عند طرد عدد كبير من الأعضاء في وقت قصير.</div>
+                            <button class="god-btn" style="width:100%; justify-content:center; padding:10px;" onclick="showGodToast('إدارة الطرد الجماعي')"><i class="fa-solid fa-gear"></i> إدارة</button>
+                        </div>
+
+                        <div class="action-card">
+                            <div class="card-top">
+                                <span class="card-title">الحظر الجماعي</span>
+                                <label class="switch"><input type="checkbox" checked onchange="showGodToast('تم تحديث حماية الحظر الجماعي')"><span class="slider"></span></label>
+                            </div>
+                            <div class="card-desc">عقوبة عند حظر عدد كبير من الأعضاء في وقت قصير.</div>
+                            <button class="god-btn" style="width:100%; justify-content:center; padding:10px;" onclick="showGodToast('إدارة الحظر الجماعي')"><i class="fa-solid fa-gear"></i> إدارة</button>
+                        </div>
+                    </div>
+
+                    <div class="input-grid" style="margin-top: 25px;">
+                        <div class="form-group">
+                            <label>قناة السجلات</label>
+                            <select class="god-select"><option>اختر قناة السجلات...</option><option># 📊-server-logs</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>لغة البوت</label>
+                            <select class="god-select"><option>🇸🇦 العربية</option><option>🇬🇧 الإنجليزية</option></select>
+                        </div>
+                    </div>
+
+                    <button class="god-btn" onclick="showGodToast('🛡️ تم حفظ إعدادات Anti-Nuke بنجاح!')"><i class="fa-solid fa-floppy-disk"></i> حفظ التغييرات</button>
+                </div>
+            </div>
+
+            <!-- 3. أدوات الإشراف -->
+            <div id="moderation" class="section-view">
+                <div class="god-panel">
+                    <h3><i class="fa-solid fa-gavel"></i> نظام الإشراف الكامل</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">نظام إشراف كامل مع أوامر وفلاتر وتصعيد.</p>
                     
                     <div class="input-grid">
                         <div class="form-group">
-                            <label>رتبة الإشراف المسؤولة عن التذاكر</label>
-                            <select class="god-select">
-                                <option>👑 Owner & Developer</option>
-                                <option>🛡️ Head Administrator</option>
-                                <option>🔨 Support Staff</option>
-                            </select>
+                            <label>قناة السجل</label>
+                            <select class="god-select"><option>اختر قناة...</option></select>
                         </div>
                         <div class="form-group">
-                            <label>نص زر فتح التذكرة (Button Label)</label>
-                            <input type="text" class="god-input" value="فتح تذكرة جديدة 🎫">
+                            <label>دور الكتَم</label>
+                            <select class="god-select"><option>اختر دوراً...</option></select>
                         </div>
+                        <div class="form-group">
+                            <label>أدوار المسؤولين</label>
+                            <select class="god-select"><option>اختر دوراً...</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>أدوار المشرفين</label>
+                            <select class="god-select"><option>اختر دوراً...</option></select>
+                        </div>
+                    </div>
+
+                    <button class="god-btn" onclick="showGodToast('⚖️ تم حفظ إعدادات الإشراف بنجاح!')">حفظ التغييرات</button>
+                </div>
+            </div>
+
+            <!-- 4. التحقق (Verification) -->
+            <div id="verification" class="section-view">
+                <div class="tabs-header">
+                    <button class="tab-btn active" onclick="showGodToast('الأعضاء')">الأعضاء</button>
+                    <button class="tab-btn" onclick="showGodToast('حارس الانضمام')">حارس الانضمام</button>
+                    <button class="tab-btn" onclick="showGodToast('النتائج')">النتائج</button>
+                    <button class="tab-btn" onclick="showGodToast('اللوحات')">اللوحات</button>
+                    <button class="tab-btn" onclick="showGodToast('التحقق')">التحقق</button>
+                </div>
+
+                <div class="god-panel">
+                    <h3><i class="fa-solid fa-user-check"></i> نظام التحقق المتقدم والأمان</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div>
+                            <h4>طلب اختبار تحقق</h4>
+                            <p style="font-size: 12px; color: var(--text-muted);">يتم التحقق من الأعضاء بتسجيل الدخول عبر ديسكورد فقط.</p>
+                        </div>
+                        <label class="switch"><input type="checkbox" checked onchange="showGodToast('تحديث حالة التحقق')"><span class="slider"></span></label>
                     </div>
 
                     <div class="form-group">
-                        <label>بانر أو صورة التذاكر (Embed Banner / Image URL)</label>
-                        <div class="image-upload-box" onclick="showGodToast('📂 انقر لرفع صورة البانر أو لصق الرابط أدناه')">
-                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                            <div style="color: #fff; font-weight: 700; margin-bottom: 5px;">اسحب الصورة إلى هنا أو اضغط للرفع</div>
-                            <div style="font-size: 12px; color: var(--text-muted);">يدعم صيغ PNG, JPG, WEBP حتى 10MB</div>
-                        </div>
-                        <input type="text" class="god-input" style="margin-top: 10px;" placeholder="أو الصق رابط الصورة مباشر (Image URL)..." value="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe">
+                        <label>رسالة الصفحة</label>
+                        <textarea class="god-textarea">أهلاً بك! تحقق بالأسفل لفتح بقية السيرفر.</textarea>
                     </div>
 
-                    <div class="form-group">
-                        <label>رسالة الترحيب التلقائية داخل التذكرة</label>
-                        <textarea class="god-textarea">أهلاً بك يا عالي المقام في تذاكر RKO الرسمية. يرجى توضيح مشكلتك وسيتم الرد عليك فوراً من قبل طاقم الإشراف.</textarea>
-                    </div>
-
-                    <button class="god-btn" onclick="showGodToast('🎟️ تم نشر لوحة التذاكر مع البانر والصورة في ديسكورد بنجاح تام!')">
-                        <i class="fa-solid fa-paper-plane"></i> حفظ ونشر لوحة التذاكر
-                    </button>
+                    <button class="god-btn" onclick="showGodToast('✅ تم حفظ إعدادات التحقق بنجاح!')">حفظ التغييرات</button>
                 </div>
             </div>
 
-            <!-- 6. البرودكاست الحربي -->
-            <div id="broadcast" class="section-view">
-                <div class="god-panel">
-                    <h3><i class="fa-solid fa-bullhorn"></i> مركز البرودكاست الحربي الشامل</h3>
-                    <div class="form-group">
-                        <label>نص الإعلان أو البرودكاست</label>
-                        <textarea class="god-textarea" placeholder="اكتب نص الإعلان..."></textarea>
-                    </div>
-                    <button class="god-btn" onclick="showGodToast('🚀 تم إرسال البرودكاست بنجاح لجميع السيرفرات!')">إرسال البرودكاست</button>
-                </div>
-            </div>
-
-            <!-- 7. الأوامر المخصصة -->
-            <div id="customcmd" class="section-view">
-                <div class="god-panel">
-                    <h3><i class="fa-solid fa-terminal"></i> صانع الأوامر المخصصة (Custom Embeds)</h3>
-                    <div class="input-grid">
-                        <div class="form-group">
-                            <label>اسم الأمر</label>
-                            <input type="text" class="god-input" placeholder="!store">
-                        </div>
-                        <div class="form-group">
-                            <label>رد البوت</label>
-                            <input type="text" class="god-input" placeholder="رابط المتجر...">
-                        </div>
-                    </div>
-                    <button class="god-btn" onclick="showGodToast('⚡ تمت إضافة الأمر المخصص بنجاح!')">إضافة الأمر</button>
-                </div>
-            </div>
-
-            <!-- 8. الحماية Anti-Nuke -->
-            <div id="antinuke" class="section-view">
-                <div class="god-panel">
-                    <h3><i class="fa-solid fa-shield-halved"></i> جدار حماية Anti-Nuke العسكري</h3>
-                    <p style="color:var(--text-muted); margin-bottom:15px;">حماية قصوى ضد التخريب، طرد المخربين، وحظر حذف الرتب.</p>
-                    <button class="god-btn danger" onclick="showGodToast('🛡️ تم تفعيل درع الحماية التدميري بنجاح!')">تفعيل الدرع القاسي</button>
-                </div>
-            </div>
-
-            <!-- 9. رادار السجلات الحية مع الفلترة -->
+            <!-- 5. سجلات الأحداث (Logs) -->
             <div id="auditlogs" class="section-view">
+                <div class="tabs-header">
+                    <button class="tab-btn active" onclick="showGodToast('إشراف')">إشراف (0/5)</button>
+                    <button class="tab-btn" onclick="showGodToast('قنوات')">قنوات (0/7)</button>
+                    <button class="tab-btn" onclick="showGodToast('رتب')">رتب (0/5)</button>
+                    <button class="tab-btn" onclick="showGodToast('سيرفر')">سيرفر (0/2)</button>
+                    <button class="tab-btn" onclick="showGodToast('رسائل')">رسائل (0/2)</button>
+                    <button class="tab-btn" onclick="showGodToast('أعضاء')">أعضاء (0/3)</button>
+                    <button class="tab-btn" onclick="showGodToast('صوتيات')">صوتيات (0/5)</button>
+                </div>
+
                 <div class="god-panel">
-                    <h3><i class="fa-solid fa-shield-cat"></i> رادار السجلات الحية والفلترة الشاملة</h3>
-                    <div class="input-grid">
-                        <div class="form-group">
-                            <label>اختر نوع الأحداث للتسجيل</label>
-                            <select class="god-select">
-                                <option>جميع الأحداث (All Events)</option>
-                                <option>حذف وإنشاء القنوات (Channels)</option>
-                                <option>تعديل وإضافة الرتب (Roles)</option>
-                                <option>دخول وخروج الأعضاء (Members)</option>
-                            </select>
+                    <h3><i class="fa-solid fa-list-check"></i> سجلات الأنشطة الصوتية والأعضاء والسيرفر</h3>
+                    <div class="cards-grid">
+                        <div class="action-card">
+                            <div class="card-top">
+                                <span class="card-title">انضمام عضو لقناة صوتية</span>
+                                <label class="switch"><input type="checkbox" onchange="showGodToast('تحديث السجل')"><span class="slider"></span></label>
+                            </div>
+                            <div class="card-desc">انضم عضو إلى قناة صوتية</div>
                         </div>
-                        <div class="form-group">
-                            <label>قناة إرسال السجلات (Logs Channel)</label>
-                            <select class="god-select">
-                                <option># 📊-server-logs</option>
-                                <option># 🔒-security-logs</option>
-                            </select>
+                        <div class="action-card">
+                            <div class="card-top">
+                                <span class="card-title">مغادرة عضو لقناة صوتية</span>
+                                <label class="switch"><input type="checkbox" onchange="showGodToast('تحديث السجل')"><span class="slider"></span></label>
+                            </div>
+                            <div class="card-desc">غادر عضو قناة صوتية</div>
+                        </div>
+                        <div class="action-card">
+                            <div class="card-top">
+                                <span class="card-title">انضمام عضو</span>
+                                <label class="switch"><input type="checkbox" checked onchange="showGodToast('تحديث السجل')"><span class="slider"></span></label>
+                            </div>
+                            <div class="card-desc">انضم عضو جديد للسيرفر</div>
                         </div>
                     </div>
-                    <button class="god-btn" onclick="showGodToast('📊 تم تحديث إعدادات السجلات الحية بنجاح!')">حفظ إعدادات السجلات</button>
                 </div>
             </div>
 
-            <!-- 10. الترحيب السينمائي والرسائل الخاصة DM -->
-            <div id="welcome" class="section-view">
-                <div class="god-panel">
-                    <h3><i class="fa-solid fa-door-open"></i> الترحيب السينمائي والرسائل الخاصة (DM)</h3>
-                    <div class="form-group">
-                        <label>رسالة الترحيب في الشات العام</label>
-                        <input type="text" class="god-input" value="أهلاً بك يا {user} في قصر RKO الشامخ!">
-                    </div>
-                    <div class="form-group">
-                        <label>رسالة الترحيب الخاصة بالخاص (Direct Message)</label>
-                        <input type="text" class="god-input" value="نورت سيرفر RKO! يرجى قراءة القوانين...">
-                    </div>
-                    <button class="god-btn" onclick="showGodToast('✨ تم حفظ إعدادات الترحيب والخاص بنجاح!')">حفظ إعدادات الترحيب</button>
-                </div>
-            </div>
-
-            <!-- 11. المستويات والتفاعل -->
-            <div id="levels" class="section-view">
-                <div class="god-panel">
-                    <h3><i class="fa-solid fa-fire"></i> المستويات والتفاعل (Leveling)</h3>
-                    <button class="god-btn" onclick="showGodToast('🔥 تم حفظ نظام المستويات وتفعيل المضاعف!')">حفظ نظام المستويات</button>
-                </div>
-            </div>
-
-            <!-- 12. صلاحيات لوحة التحكم -->
-            <div id="staffroles" class="section-view">
-                <div class="god-panel">
-                    <h3><i class="fa-solid fa-user-shield"></i> صلاحيات لوحة التحكم (Dashboard ACL)</h3>
-                    <button class="god-btn" onclick="showGodToast('👑 تم حفظ صلاحيات الإدارة بنجاح!')">حفظ الصلاحيات</button>
-                </div>
-            </div>
+            <!-- بقية الأقسام -->
+            <div id="welcome" class="section-view"><div class="god-panel"><h3>الترحيب والمغادرة</h3><button class="god-btn" onclick="showGodToast('تم الحفظ')">حفظ</button></div></div>
+            <div id="levels" class="section-view"><div class="god-panel"><h3>نظام المستويات</h3><button class="god-btn" onclick="showGodToast('تم الحفظ')">حفظ</button></div></div>
+            <div id="giveaways" class="section-view"><div class="god-panel"><h3>السحوبات</h3><button class="god-btn" onclick="showGodToast('تم الحفظ')">حفظ</button></div></div>
+            <div id="autorank" class="section-view"><div class="god-panel"><h3>إدارة الرتب</h3><button class="god-btn" onclick="showGodToast('تم الحفظ')">حفظ</button></div></div>
+            <div id="voice" class="section-view"><div class="god-panel"><h3>القنوات الصوتية المؤقتة</h3><button class="god-btn" onclick="showGodToast('تم الحفظ')">حفظ</button></div></div>
+            <div id="premium" class="section-view"><div class="god-panel"><h3>باقات البريميوم</h3><button class="god-btn" onclick="showGodToast('اشتراك')">اشتراك</button></div></div>
 
         </div>
     </div>
@@ -716,7 +639,7 @@
             toast.style.display = 'block';
             setTimeout(() => {
                 toast.style.display = 'none';
-            }, 4000);
+            }, 3500);
         }
     </script>
 </body>
