@@ -3,248 +3,585 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم - بوت ركو</title>
-    <!-- استدعاء خطوط وأيقونات عصرية -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>ROKO BOT - Nexus Ultimate Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --bg-deep: #05070b;
+            --bg-panel: rgba(13, 19, 34, 0.75);
+            --border-glow: rgba(56, 189, 248, 0.25);
+            --accent-cyan: #38bdf8;
+            --accent-neon: #a855f7;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Cairo', sans-serif;
         }
+
         body {
-            background-color: #0b0f19;
-            color: #f3f4f6;
+            background-color: var(--bg-deep);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 40%);
+            color: var(--text-main);
             display: flex;
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
         }
-        /* القائمة الجانبية */
+
+        /* القائمة الجانبية المبتكرة */
         .sidebar {
-            width: 260px;
-            background-color: #111827;
-            border-left: 1px solid #1f2937;
+            width: 290px;
+            background: rgba(8, 12, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
             flex-direction: column;
+            height: 100vh;
+            z-index: 100;
         }
+
         .sidebar-brand {
-            padding: 25px;
-            font-size: 20px;
-            font-weight: 700;
-            color: #38bdf8;
-            border-bottom: 1px solid #1f2937;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .sidebar-menu {
-            list-style: none;
-            padding: 20px 15px;
-        }
-        .sidebar-menu li {
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: 0.3s;
+            padding: 25px 20px;
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--accent-cyan);
             display: flex;
             align-items: center;
             gap: 12px;
-            color: #9ca3af;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
         }
-        .sidebar-menu li:hover, .sidebar-menu li.active {
-            background-color: #1e293b;
-            color: #38bdf8;
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 15px;
+            overflow-y: auto;
+            flex: 1;
         }
-        /* المحتوى الرئيسي */
-        .main-content {
+
+        .sidebar-menu::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar-menu::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, 0.2);
+            border-radius: 4px;
+        }
+
+        .menu-category {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin: 20px 10px 8px 0;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .sidebar-menu li {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid transparent;
+        }
+
+        .sidebar-menu li i {
+            font-size: 16px;
+            width: 24px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .sidebar-menu li:hover {
+            background: rgba(56, 189, 248, 0.08);
+            color: var(--accent-cyan);
+            border-color: rgba(56, 189, 248, 0.15);
+            transform: translateX(-4px);
+        }
+
+        .sidebar-menu li:hover i {
+            transform: scale(1.2);
+        }
+
+        .sidebar-menu li.active {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: #ffffff;
+            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.4);
+            border-color: transparent;
+        }
+
+        .badge-cyber {
+            background: rgba(168, 85, 247, 0.2);
+            color: #d8b4fe;
+            font-size: 9px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            margin-right: auto;
+            font-weight: 800;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        /* محتوى الشاشة الرئيسي */
+        .main-wrapper {
             flex: 1;
             display: flex;
             flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
         }
+
         header {
-            background-color: #111827;
-            padding: 20px 30px;
-            border-bottom: 1px solid #1f2937;
+            background: rgba(13, 19, 34, 0.6);
+            backdrop-filter: blur(15px);
+            padding: 20px 35px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            height: 75px;
         }
-        .user-info {
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 10px;
-            font-weight: 600;
         }
-        .user-info span {
-            color: #38bdf8;
+
+        .header-title span {
+            color: var(--accent-cyan);
         }
-        .dashboard-body {
-            padding: 30px;
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 6px 16px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .avatar-glow {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--accent-cyan), var(--accent-neon));
+            position: relative;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+        }
+
+        .content-area {
+            padding: 35px;
             overflow-y: auto;
+            flex: 1;
         }
-        /* الإحصائيات (الكروت) */
+
+        .section-view {
+            display: none;
+            animation: cyberFade 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .section-view.active {
+            display: block;
+        }
+
+        @keyframes cyberFade {
+            from { opacity: 0; transform: translateY(15px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* البانر الخرافي */
+        .hero-banner {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 27, 75, 0.9) 100%);
+            border: 1px solid var(--border-glow);
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero-banner h1 {
+            font-size: 26px;
+            font-weight: 900;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .hero-banner p {
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        /* كروت الإحصائيات المضيئة */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
+
         .stat-card {
-            background-color: #111827;
-            border: 1px solid #1f2937;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            background: var(--bg-panel);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 24px;
+            border-radius: 16px;
+            position: relative;
+            transition: 0.3s;
         }
+
+        .stat-card:hover {
+            border-color: rgba(56, 189, 248, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
         .stat-card h3 {
-            font-size: 14px;
-            color: #9ca3af;
-            margin-bottom: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+
         .stat-card .value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #ffffff;
+            font-size: 26px;
+            font-weight: 900;
+            color: #fff;
         }
-        /* قسم التحكم والعمليات */
-        .control-section {
-            background-color: #111827;
-            border: 1px solid #1f2937;
-            padding: 25px;
-            border-radius: 12px;
+
+        /* لوحات التحكم والنماذج */
+        .cyber-panel {
+            background: var(--bg-panel);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 25px;
         }
-        .control-section h2 {
+
+        .cyber-panel h3 {
             font-size: 18px;
+            color: #fff;
             margin-bottom: 20px;
-            border-bottom: 1px solid #1f2937;
-            padding-bottom: 10px;
-        }
-        .btn-group {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: 0.3s;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
             font-size: 14px;
-        }
-        .btn-primary {
-            background-color: #0284c7;
-            color: white;
-        }
-        .btn-primary:hover {
-            background-color: #0369a1;
-        }
-        .btn-danger {
-            background-color: #dc2626;
-            color: white;
-        }
-        .btn-danger:hover {
-            background-color: #b91c1c;
-        }
-        /* صندوق التنبيه التفاعلي الواضح */
-        #alert-box {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            background-color: #1e293b;
-            border: 1px solid #38bdf8;
-            color: #38bdf8;
+            color: var(--text-muted);
             font-weight: 600;
-            display: none;
-            animation: fadeIn 0.3s ease;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        .cyber-input {
+            width: 100%;
+            background: rgba(5, 7, 11, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 14px 18px;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        .cyber-input:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+        }
+
+        .cyber-btn {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: #fff;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
+        }
+
+        .cyber-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5);
+        }
+
+        /* إشعار عائم نيون */
+        #neon-toast {
+            position: fixed;
+            bottom: 35px;
+            left: 35px;
+            background: rgba(13, 19, 34, 0.95);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px rgba(56, 189, 248, 0.3);
+            display: none;
+            z-index: 1000;
+            animation: toastPopup 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes toastPopup {
+            from { transform: translateY(30px) scale(0.9); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
         }
     </style>
 </head>
 <body>
 
-    <!-- القائمة الجانبية -->
+    <!-- القائمة الجانبية الأسطورية -->
     <div class="sidebar">
         <div class="sidebar-brand">
-            <i class="fa-solid fa-robot"></i> ركو بوت
+            <i class="fa-solid fa-bolt" style="color: var(--accent-cyan);"></i> ROKO // NEXUS
         </div>
         <ul class="sidebar-menu">
-            <li class="active"><i class="fa-solid fa-house"></i> الرئيسية</li>
-            <li><i class="fa-solid fa-server"></i> السيرفرات</li>
-            <li><i class="fa-solid fa-terminal"></i> الأوامر</li>
-            <li><i class="fa-solid fa-gear"></i> الإعدادات</li>
+            <div class="menu-category">التحكم الرئيسي</div>
+            <li class="active" onclick="switchView('overview', this)"><i class="fa-solid fa-chart-pie"></i> نظرة عامة</li>
+            <li onclick="switchView('premium', this)"><i class="fa-solid fa-crown" style="color: #fbbf24;"></i> الترقية الفاخرة <span class="badge-cyber">ULTRA</span></li>
+            <li onclick="switchView('identity', this)"><i class="fa-solid fa-fingerprint"></i> هوية البوت</li>
+
+            <div class="menu-category">الأمن والحماية القتالية</div>
+            <li onclick="switchView('antinuke', this)"><i class="fa-solid fa-shield-virus"></i> درع النيوك الخارق</li>
+            <li onclick="switchView('moderation', this)"><i class="fa-solid fa-scale-balanced"></i> العقوبات والتحقيق</li>
+            <li onclick="switchView('auditlogs', this)"><i class="fa-solid fa-timeline"></i> السجلات المباشرة</li>
+
+            <div class="menu-category">المجتمع والتفاعل</div>
+            <li onclick="switchView('welcome', this)"><i class="fa-solid fa-door-open"></i> الترحيب الأسطوري</li>
+            <li onclick="switchView('levels', this)"><i class="fa-solid fa-fire" style="color: #f97316;"></i> نظام التفاعل واللفلات <span class="badge-cyber">HOT</span></li>
+            <li onclick="switchView('giveaways', this)"><i class="fa-solid fa-gift"></i> السحوبات والجوائز</li>
+            <li onclick="switchView('tickets', this)"><i class="fa-solid fa-headset"></i> تذاكر الدعم الفني</li>
+            <li onclick="switchView('autoreply', this)"><i class="fa-solid fa-robot"></i> الذكاء الاصطناعي والردود</li>
+
+            <div class="menu-category">أدوات السيرفر المتقدمة</div>
+            <li onclick="switchView('tempvoice', this)"><i class="fa-solid fa-microphone-lines"></i> الغرف الصوتية الذكية</li>
+            <li onclick="switchView('roles', this)"><i class="fa-solid fa-id-card-clip"></i> رتب التفاعل السريع</li>
         </ul>
     </div>
 
     <!-- المحتوى الرئيسي -->
-    <div class="main-content">
+    <div class="main-wrapper">
         <header>
-            <h1>لوحة التحكم الرئيسية</h1>
-            <div class="user-info">
-                مرحباً بك، <span>عمار</span>
+            <div class="header-title">
+                لوحة القيادة / <span id="header-tracker">نظرة عامة</span>
+            </div>
+            <div class="user-badge">
+                <div class="avatar-glow"></div>
+                <span style="font-weight: 700; font-size: 14px;">عمار (المطور)</span>
             </div>
         </header>
 
-        <div class="dashboard-body">
-            <!-- كروت الإحصائيات -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>حالة البوت</h3>
-                    <div class="value" style="color: #22c55e;"><i class="fa-solid fa-circle" style="font-size: 12px;"></i> أونلاين</div>
+        <div class="content-area">
+            
+            <!-- 1. نظرة عامة -->
+            <div id="overview" class="section-view active">
+                <div class="hero-banner">
+                    <h1>مرحباً بك في نظام Roko Nexus الفائق 🚀</h1>
+                    <p>أنت تداري الآن السيرفر بأقوى بنية تحتية برمجية متصلة بسيرفرات السحابية المتقدمة.</p>
                 </div>
-                <div class="stat-card">
-                    <h3>عدد السيرفرات</h3>
-                    <div class="value">12 سيرفر</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>أعضاء السيرفر</h3>
+                        <div class="value">1,420 عضو</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>الرسائل اليومية</h3>
+                        <div class="value">8,390 رسالة</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>استجابة البنق</h3>
+                        <div class="value" style="color: #4ade80;">12ms</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>حالة النظام</h3>
+                        <div class="value" style="color: var(--accent-cyan);">100% نشط</div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <h3>المستخدمين</h3>
-                    <div class="value">1,420 مستخدم</div>
-                </div>
-                <div class="stat-card">
-                    <h3>استجابة البنق</h3>
-                    <div class="value">24ms</div>
+                <div class="cyber-panel">
+                    <h3><i class="fa-solid fa-server"></i> حالة الاتصال السحابي</h3>
+                    <p style="color: var(--text-muted); line-height: 1.7;">جميع السيرفرات تعمل بأعلى كفاءة مع تأمين كامل ضد الهجمات وانقطاع الاتصال.</p>
                 </div>
             </div>
 
-            <!-- أزرار التحكم بالبوت -->
-            <div class="control-section">
-                <h2>إدارة وتحكم البوت</h2>
-                <div class="btn-group">
-                    <button class="btn btn-primary" onclick="showMsg('تم إرسال أمر إعادة تشغيل البوت بنجاح! 🔄')">
-                        <i class="fa-solid fa-rotate-right"></i> إعادة تشغيل البوت
-                    </button>
-                    <button class="btn btn-primary" onclick="showMsg('تم مسح ذاكرة التخزين المؤقت (Cache) بنجاح! 🧹')">
-                        <i class="fa-solid fa-broom"></i> مسح الكاش
-                    </button>
-                    <button class="btn btn-danger" onclick="showMsg('تم إيقاف تشغيل الأوامر المؤقتة للصيانة! ⚠️')">
-                        <i class="fa-solid fa-power-off"></i> وضع الصيانة
-                    </button>
+            <!-- 2. الترقية -->
+            <div id="premium" class="section-view">
+                <div class="cyber-panel">
+                    <h3>👑 ترقية النظام إلى المستوى الخارق (Ultra Pro)</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 25px;">افتح صلاحيات غير محدودة، وسرعة معالجة مضاعفة 10 مرات.</p>
+                    <button class="cyber-btn" onclick="showToast('تمت ترقية السيرفر للوضع الخارق بنجاح! 🔥')">تفعيل الترقية الفورية</button>
                 </div>
-                <!-- مكان ظهور التنبيه عند الضغط -->
-                <div id="alert-box"></div>
             </div>
+
+            <!-- 3. هوية البوت -->
+            <div id="identity" class="section-view">
+                <div class="cyber-panel">
+                    <h3><i class="fa-solid fa-fingerprint"></i> تخصيص مظهر وهوية البوت</h3>
+                    <div class="input-group">
+                        <label>اسم البوت الجديد</label>
+                        <input type="text" class="cyber-input" value="Roko Core AI">
+                    </div>
+                    <div class="input-group">
+                        <label>الحالة النشطة (Rich Presence)</label>
+                        <input type="text" class="cyber-input" value="Managing 977z Ecosystem">
+                    </div>
+                    <button class="cyber-btn" onclick="showToast('تم تحديث هوية البوت ونشرها في الديسكورد! ✨')">حفظ ونشر التغييرات</button>
+                </div>
+            </div>
+
+            <!-- 4. درع النيوك -->
+            <div id="antinuke" class="section-view">
+                <div class="cyber-panel">
+                    <h3><i class="fa-solid fa-shield-virus"></i> درع الحماية الفائق (Anti-Nuke Matrix)</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 25px;">حظر فوري لأي محاولة تخريب أو حذف رتب وقنوات بشكل جماعي.</p>
+                    <button class="cyber-btn" onclick="showToast('تم تأمين السيرفر بدرع النيوك الخارق بنجاح! 🛡️')">تفعيل الدرع الأمني</button>
+                </div>
+            </div>
+
+            <!-- 5. العقوبات -->
+            <div id="moderation" class="section-view">
+                <div class="cyber-panel">
+                    <h3><i class="fa-solid fa-scale-balanced"></i> إدارة العقوبات والتحقيق التلقائي</h3>
+                    <button class="cyber-btn" onclick="showToast('تم تحديث نظام العقوبات الصارم!')">حفظ الإعدادات</button>
+                </div>
+            </div>
+
+            <!-- 6. السجلات -->
+            <div id="auditlogs" class="section-view">
+                <div class="cyber-panel">
+                    <h3><i class="fa-solid fa-timeline"></i> رادار السجلات الحية (Live Audit Matrix)</h3>
+                    <p style="color: var(--text-muted);">رصد لحظي لكل حركة تعديل أو دخول في السيرفر.</p>
+                </div>
+            </div>
+
+            <!-- 7. الترحيب -->
+            <div id="welcome" class="section-view">
+                <div class="cyber-panel">
+                    <h3><i class="fa-solid fa-door-open"></i> نظام الترحيب السينمائي</h3>
+                    <div class="input-group">
+                        <label>رسالة الترحيب المخصصة</label>
+                        <input type="text" class="cyber-input" value="أهلاً بك يا {user} في قمة مجتمعنا الأسطوري! 🚀">
+                    </div>
+                    <button class="cyber-btn" onclick="showToast('تم حفظ قالب الترحيب بنجاح!')">حفظ القالب</button>
+                </div>
+            </div>
+
+            <!-- 8. اللفلات -->
+            <div id="levels" class="section-view">
+                <div class="cyber-panel">
+                    <h3><i class="fa-solid fa-fire"></i> نظام التفاعل والمستويات النارية</h3>
+                    <button class="cyber-btn" onclick="showToast('تم تشغيل مضاعف النقاط واللفلات!')">تفعيل النظام</button>
+                </div>
+            </div>
+
+            <!-- 9. السحوبات -->
+            <div id="giveaways" class="section-view">
+                <div class="cyber-panel">
+                    <h3><i class="fa-solid fa-gift"></i> أداة السحوبات التلقائية</h3>
+                    <button class="cyber-btn" onclick="showToast('تم بدء السحب العشوائي بنجاح! 🎉')">بدء مسابقة جديدة</button>
+                </div>
+            </div>
+
+            <!-- 10. التذاكر -->
+            <div id="tickets" class="section-view">
+                <div class="cyber-panel">
+                    <h3><i class="fa-solid fa-headset"></i> مركز تذاكر الدعم الفني المطور</h3>
+                    <button class="cyber-btn" onclick="showToast('تم تحديث أزرار فتح التذاكر!')">حفظ اللوحة</button>
+                </div>
+            </div>
+
+            <!-- 11. الذكاء الاصطناعي والردود -->
+            <div id="autoreply" class="section-view">
+                <div class="cyber-panel">
+                    <h3><i class="fa-solid fa-robot"></i> الردود التلقائية الذكية</h3>
+                    <button class="cyber-btn" onclick="showToast('تم تحديث قواعد الرد الآلي!')">حفظ الردود</button>
+                </div>
+            </div>
+
+            <!-- 12. الغرف الصوتية -->
+            <div id="tempvoice" class="section-view">
+                <div class="cyber-panel">
+                    <h3><i class="fa-solid fa-microphone-lines"></i> نظام الغرف الصوتية المؤقتة</h3>
+                    <button class="cyber-btn" onclick="showToast('تم تفعيل غرف الصوت الذكية!')">تفعيل النظام</button>
+                </div>
+            </div>
+
+            <!-- 13. رتب التفاعل -->
+            <div id="roles" class="section-view">
+                <div class="cyber-panel">
+                    <h3><i class="fa-solid fa-id-card-clip"></i> رتب التفاعل عبر الأزرار (Reaction Roles)</h3>
+                    <button class="cyber-btn" onclick="showToast('تم حفظ أزرار الرتب بنجاح!')">حفظ الرتب</button>
+                </div>
+            </div>
+
         </div>
     </div>
 
+    <!-- إشعار النيون الفاخر -->
+    <div id="neon-toast"></div>
+
     <script>
-        function showMsg(text) {
-            const box = document.getElementById('alert-box');
-            box.style.display = 'block';
-            box.innerText = text;
-            
-            // إخفاء التنبيه تلقائياً بعد 4 ثواني
+        function switchView(viewId, element) {
+            // تفعيل الزر في القائمة الجانبية
+            document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
+            element.classList.add('active');
+
+            // تبديل الشاشات بـ Animation
+            document.querySelectorAll('.section-view').forEach(view => view.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+
+            // تحديث العنوان العلوي
+            document.getElementById('header-tracker').innerText = element.innerText.trim();
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('neon-toast');
+            toast.innerText = message;
+            toast.style.display = 'block';
             setTimeout(() => {
-                box.style.display = 'none';
-            }, 4000);
+                toast.style.display = 'none';
+            }, 3500);
         }
     </script>
 </body>
