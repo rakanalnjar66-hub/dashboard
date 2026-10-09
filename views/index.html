@@ -95,13 +95,6 @@
             border: 1px solid transparent;
         }
 
-        .sidebar-menu li i {
-            font-size: 15px;
-            width: 22px;
-            text-align: center;
-            transition: transform 0.3s;
-        }
-
         .sidebar-menu li:hover {
             background: rgba(56, 189, 248, 0.08);
             color: var(--accent-cyan);
@@ -113,7 +106,6 @@
             background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
             color: #fff;
             box-shadow: 0 8px 25px rgba(2, 132, 199, 0.4);
-            border-color: transparent;
         }
 
         .badge-god {
@@ -222,7 +214,6 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px;
             padding: 22px;
-            position: relative;
             transition: 0.3s;
         }
 
@@ -290,11 +281,6 @@
             box-shadow: 0 8px 25px rgba(2, 132, 199, 0.6);
         }
 
-        .god-btn.danger {
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-            box-shadow: 0 5px 20px rgba(220, 38, 38, 0.4);
-        }
-
         .switch {
             position: relative;
             display: inline-block;
@@ -316,20 +302,22 @@
 
         .tabs-header {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             margin-bottom: 25px;
             border-bottom: 1px solid rgba(255,255,255,0.06);
             padding-bottom: 15px;
+            overflow-x: auto;
         }
 
         .tab-btn {
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.08);
             color: var(--text-muted);
-            padding: 10px 20px;
+            padding: 10px 18px;
             border-radius: 10px;
             cursor: pointer;
             font-weight: 700;
+            white-space: nowrap;
             transition: 0.3s;
         }
 
@@ -337,6 +325,13 @@
             background: var(--accent-cyan);
             color: #000;
             border-color: var(--accent-cyan);
+        }
+
+        .char-counter {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: left;
+            margin-top: 5px;
         }
 
         #god-toast {
@@ -398,13 +393,13 @@
 
         <div class="content-area">
             
-            <!-- 1. تخصيص البوت (Custom Bot) -->
+            <!-- 1. تخصيص البوت (Custom Bot Setup) -->
             <div id="custombot" class="section-view">
                 <div class="god-panel">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <div>
                             <h3 style="margin-bottom: 5px;"><i class="fa-solid fa-robot"></i> البوت المخصص</h3>
-                            <p style="color: var(--text-muted); font-size: 13px;">منح ZMN اسماً وصورةً ونابذاً خاصة به في هذا السيرفر.</p>
+                            <p style="color: var(--text-muted); font-size: 13px;">منح ZMN اسماً وصورةً ونبذةً خاصة به في هذا السيرفر.</p>
                         </div>
                         <label class="switch"><input type="checkbox" checked onchange="showGodToast('تم تفعيل البوت المخصص!')"><span class="slider"></span></label>
                     </div>
@@ -412,28 +407,30 @@
                     <div style="background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.3); padding: 18px; border-radius: 14px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
                         <div>
                             <h4 style="color: var(--accent-gold); margin-bottom: 5px;"><i class="fa-solid fa-crown"></i> ملف البوت الخاص بكل سيرفر ميزة بريميوم</h4>
-                            <p style="font-size: 12px; color: var(--text-muted);">قم بالترقية لمنح ZMN اسماً وصورةً ونابذاً خاصة به في هذا السيرفر.</p>
+                            <p style="font-size: 12px; color: var(--text-muted);">قم بالترقية لمنح ZMN اسماً وصورةً ونبذةً خاصة به في هذا السيرفر.</p>
                         </div>
                         <button class="god-btn" style="background: var(--accent-cyan); color: #000;" onclick="showGodToast('جاري فتح نافذة البريميوم...')">عرض البريميوم</button>
                     </div>
 
-                    <div class="input-grid">
-                        <div class="form-group">
-                            <label>اللقب (0/32)</label>
-                            <input type="text" class="god-input" placeholder="اسم ZMN في هذا السيرفر (اتركه فارغاً لاستخدام اسم ZMN)">
-                        </div>
-                        <div class="form-group">
-                            <label>نبذة عني (0/190)</label>
-                            <textarea class="god-textarea" placeholder="ما يراه الأعضاء في ملف ZMN بهذا السيرفر"></textarea>
-                        </div>
+                    <div class="form-group">
+                        <label>اللقب</label>
+                        <input type="text" class="god-input" placeholder="اسم ZMN في هذا السيرفر (اتركه فارغاً لاستخدام اسم ZMN)">
+                        <div class="char-counter">0/32</div>
                     </div>
 
                     <div class="form-group">
-                        <label>الصورة الشخصية (مربعة، 256x256 على الأقل، PNG أو JPG أو GIF أو WebP حتى 8 ميجابايت. استخدم GIF للصور المتحركة)</label>
-                        <button class="god-btn" onclick="showGodToast('جاري رفع الصورة الشخصية للبوت...')"><i class="fa-solid fa-upload"></i> اختر صورة</button>
+                        <label>نبذة عني</label>
+                        <textarea class="god-textarea" placeholder="ما يراه الأعضاء في ملف ZMN بهذا السيرفر"></textarea>
+                        <div class="char-counter">0/190</div>
                     </div>
 
-                    <button class="god-btn" style="margin-top: 15px;" onclick="showGodToast('✨ تم حفظ إعدادات البوت المخصص بنجاح!')">حفظ التغييرات</button>
+                    <div class="form-group">
+                        <label>الصورة الشخصية</label>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">مربعة، 256x256 على الأقل. PNG أو JPG أو GIF أو WebP حتى 8 ميجابايت. استخدم GIF للصور المتحركة.</p>
+                        <button class="god-btn" onclick="showGodToast('جاري اختيار الصورة الشخصية للبوت...')"><i class="fa-solid fa-upload"></i> اختر صورة</button>
+                    </div>
+
+                    <button class="god-btn" style="margin-top: 15px;" onclick="showGodToast('✨ تم حفظ إعدادات البوت المخصص بنجاح!')"><i class="fa-solid fa-floppy-disk"></i> حفظ التغييرات</button>
                 </div>
             </div>
 
@@ -446,31 +443,31 @@
                 </div>
 
                 <div class="god-panel">
-                    <h3><i class="fa-solid fa-shield-halved" style="color: var(--accent-red);"></i> نظام الحماية والعمليات الفورية ضد التخريب</h3>
+                    <h3><i class="fa-solid fa-shield-halved" style="color: var(--accent-red);"></i> نظام الحماية الشامل ضد النيوك والتخريب</h3>
                     
                     <div class="cards-grid">
                         <div class="action-card">
                             <div class="card-top">
                                 <span class="card-title">حذف رتب</span>
-                                <label class="switch"><input type="checkbox" checked onchange="showGodToast('تم تحديث حماية حذف الرتب')"><span class="slider"></span></label>
+                                <label class="switch"><input type="checkbox" checked onchange="showGodToast('تحديث حذف رتب')"><span class="slider"></span></label>
                             </div>
                             <div class="card-desc">عقوبة عند حذف عدد كبير من الرتب في وقت قصير.</div>
-                            <button class="god-btn" style="width:100%; justify-content:center; padding:10px;" onclick="showGodToast('إدارة إعدادات حذف الرتب')"><i class="fa-solid fa-gear"></i> إدارة</button>
+                            <button class="god-btn" style="width:100%; justify-content:center; padding:10px;" onclick="showGodToast('إدارة حذف رتب')"><i class="fa-solid fa-gear"></i> إدارة</button>
                         </div>
 
                         <div class="action-card">
                             <div class="card-top">
                                 <span class="card-title">إنشاء رتب</span>
-                                <label class="switch"><input type="checkbox" checked onchange="showGodToast('تم تحديث حماية إنشاء الرتب')"><span class="slider"></span></label>
+                                <label class="switch"><input type="checkbox" checked onchange="showGodToast('تحديث إنشاء رتب')"><span class="slider"></span></label>
                             </div>
                             <div class="card-desc">عقوبة عند إنشاء عدد كبير من الرتب في وقت قصير.</div>
-                            <button class="god-btn" style="width:100%; justify-content:center; padding:10px;" onclick="showGodToast('إدارة إعدادات إنشاء الرتب')"><i class="fa-solid fa-gear"></i> إدارة</button>
+                            <button class="god-btn" style="width:100%; justify-content:center; padding:10px;" onclick="showGodToast('إدارة إنشاء رتب')"><i class="fa-solid fa-gear"></i> إدارة</button>
                         </div>
 
                         <div class="action-card">
                             <div class="card-top">
                                 <span class="card-title">الطرد الجماعي</span>
-                                <label class="switch"><input type="checkbox" checked onchange="showGodToast('تم تحديث حماية الطرد الجماعي')"><span class="slider"></span></label>
+                                <label class="switch"><input type="checkbox" checked onchange="showGodToast('تحديث الطرد الجماعي')"><span class="slider"></span></label>
                             </div>
                             <div class="card-desc">عقوبة عند طرد عدد كبير من الأعضاء في وقت قصير.</div>
                             <button class="god-btn" style="width:100%; justify-content:center; padding:10px;" onclick="showGodToast('إدارة الطرد الجماعي')"><i class="fa-solid fa-gear"></i> إدارة</button>
@@ -479,17 +476,35 @@
                         <div class="action-card">
                             <div class="card-top">
                                 <span class="card-title">الحظر الجماعي</span>
-                                <label class="switch"><input type="checkbox" checked onchange="showGodToast('تم تحديث حماية الحظر الجماعي')"><span class="slider"></span></label>
+                                <label class="switch"><input type="checkbox" checked onchange="showGodToast('تحديث الحظر الجماعي')"><span class="slider"></span></label>
                             </div>
                             <div class="card-desc">عقوبة عند حظر عدد كبير من الأعضاء في وقت قصير.</div>
                             <button class="god-btn" style="width:100%; justify-content:center; padding:10px;" onclick="showGodToast('إدارة الحظر الجماعي')"><i class="fa-solid fa-gear"></i> إدارة</button>
+                        </div>
+
+                        <div class="action-card">
+                            <div class="card-top">
+                                <span class="card-title">حذف قنوات</span>
+                                <label class="switch"><input type="checkbox" checked onchange="showGodToast('تحديث حذف قنوات')"><span class="slider"></span></label>
+                            </div>
+                            <div class="card-desc">عقوبة عند حذف عدد كبير من القنوات في وقت قصير.</div>
+                            <button class="god-btn" style="width:100%; justify-content:center; padding:10px;" onclick="showGodToast('إدارة حذف قنوات')"><i class="fa-solid fa-gear"></i> إدارة</button>
+                        </div>
+
+                        <div class="action-card">
+                            <div class="card-top">
+                                <span class="card-title">إنشاء قنوات</span>
+                                <label class="switch"><input type="checkbox" checked onchange="showGodToast('تحديث إنشاء قنوات')"><span class="slider"></span></label>
+                            </div>
+                            <div class="card-desc">عقوبة عند إنشاء عدد كبير من القنوات في وقت قصير.</div>
+                            <button class="god-btn" style="width:100%; justify-content:center; padding:10px;" onclick="showGodToast('إدارة إنشاء قنوات')"><i class="fa-solid fa-gear"></i> إدارة</button>
                         </div>
                     </div>
 
                     <div class="input-grid" style="margin-top: 25px;">
                         <div class="form-group">
                             <label>قناة السجلات</label>
-                            <select class="god-select"><option>اختر قناة السجلات...</option><option># 📊-server-logs</option></select>
+                            <select class="god-select"><option>اختر قناة...</option><option># 📊-server-logs</option></select>
                         </div>
                         <div class="form-group">
                             <label>لغة البوت</label>
@@ -497,14 +512,14 @@
                         </div>
                     </div>
 
-                    <button class="god-btn" onclick="showGodToast('🛡️ تم حفظ إعدادات Anti-Nuke بنجاح!')"><i class="fa-solid fa-floppy-disk"></i> حفظ التغييرات</button>
+                    <button class="god-btn" onclick="showGodToast('🛡️ تم حفظ إعدادات الحماية بنجاح!')"><i class="fa-solid fa-floppy-disk"></i> حفظ التغييرات</button>
                 </div>
             </div>
 
             <!-- 3. أدوات الإشراف -->
             <div id="moderation" class="section-view">
                 <div class="god-panel">
-                    <h3><i class="fa-solid fa-gavel"></i> نظام الإشراف الكامل</h3>
+                    <h3><i class="fa-solid fa-gavel"></i> نظام الإشراف الكامل والأوامر</h3>
                     <p style="color: var(--text-muted); margin-bottom: 20px;">نظام إشراف كامل مع أوامر وفلاتر وتصعيد.</p>
                     
                     <div class="input-grid">
@@ -526,7 +541,7 @@
                         </div>
                     </div>
 
-                    <button class="god-btn" onclick="showGodToast('⚖️ تم حفظ إعدادات الإشراف بنجاح!')">حفظ التغييرات</button>
+                    <button class="god-btn" onclick="showGodToast('⚖️ تم حفظ إعدادات الإشراف بنجاح!')"><i class="fa-solid fa-floppy-disk"></i> حفظ التغييرات</button>
                 </div>
             </div>
 
@@ -541,25 +556,25 @@
                 </div>
 
                 <div class="god-panel">
-                    <h3><i class="fa-solid fa-user-check"></i> نظام التحقق المتقدم والأمان</h3>
+                    <h3><i class="fa-solid fa-user-check"></i> نظام التحقق المتقدم وأمان الأعضاء الجدد</h3>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <div>
                             <h4>طلب اختبار تحقق</h4>
                             <p style="font-size: 12px; color: var(--text-muted);">يتم التحقق من الأعضاء بتسجيل الدخول عبر ديسكورد فقط.</p>
                         </div>
-                        <label class="switch"><input type="checkbox" checked onchange="showGodToast('تحديث حالة التحقق')"><span class="slider"></span></label>
+                        <label class="switch"><input type="checkbox" checked onchange="showGodToast('تحديث التحقق')"><span class="slider"></span></label>
                     </div>
 
                     <div class="form-group">
-                        <label>رسالة الصفحة</label>
+                        <label>رسالة الصفحة (0/500)</label>
                         <textarea class="god-textarea">أهلاً بك! تحقق بالأسفل لفتح بقية السيرفر.</textarea>
                     </div>
 
-                    <button class="god-btn" onclick="showGodToast('✅ تم حفظ إعدادات التحقق بنجاح!')">حفظ التغييرات</button>
+                    <button class="god-btn" onclick="showGodToast('✅ تم حفظ إعدادات التحقق بنجاح!')"><i class="fa-solid fa-floppy-disk"></i> حفظ التغييرات</button>
                 </div>
             </div>
 
-            <!-- 5. سجلات الأحداث (Logs) -->
+            <!-- 5. سجلات الأحداث (Logs) مع الفئات السبع -->
             <div id="auditlogs" class="section-view">
                 <div class="tabs-header">
                     <button class="tab-btn active" onclick="showGodToast('إشراف')">إشراف (0/5)</button>
@@ -572,26 +587,26 @@
                 </div>
 
                 <div class="god-panel">
-                    <h3><i class="fa-solid fa-list-check"></i> سجلات الأنشطة الصوتية والأعضاء والسيرفر</h3>
+                    <h3><i class="fa-solid fa-list-check"></i> رادار السجلات والأحداث الحية</h3>
                     <div class="cards-grid">
                         <div class="action-card">
                             <div class="card-top">
                                 <span class="card-title">انضمام عضو لقناة صوتية</span>
-                                <label class="switch"><input type="checkbox" onchange="showGodToast('تحديث السجل')"><span class="slider"></span></label>
+                                <label class="switch"><input type="checkbox" onchange="showGodToast('تحديث')"><span class="slider"></span></label>
                             </div>
                             <div class="card-desc">انضم عضو إلى قناة صوتية</div>
                         </div>
                         <div class="action-card">
                             <div class="card-top">
                                 <span class="card-title">مغادرة عضو لقناة صوتية</span>
-                                <label class="switch"><input type="checkbox" onchange="showGodToast('تحديث السجل')"><span class="slider"></span></label>
+                                <label class="switch"><input type="checkbox" onchange="showGodToast('تحديث')"><span class="slider"></span></label>
                             </div>
                             <div class="card-desc">غادر عضو قناة صوتية</div>
                         </div>
                         <div class="action-card">
                             <div class="card-top">
                                 <span class="card-title">انضمام عضو</span>
-                                <label class="switch"><input type="checkbox" checked onchange="showGodToast('تحديث السجل')"><span class="slider"></span></label>
+                                <label class="switch"><input type="checkbox" checked onchange="showGodToast('تحديث')"><span class="slider"></span></label>
                             </div>
                             <div class="card-desc">انضم عضو جديد للسيرفر</div>
                         </div>
