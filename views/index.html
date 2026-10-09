@@ -340,4 +340,315 @@
         }
 
         .payment-card {
-            background: rgba(3, 6, 12
+            background: rgba(3, 6, 12, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .payment-card:hover, .payment-card.selected {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.25);
+            transform: translateY(-4px);
+        }
+
+        .payment-card i {
+            font-size: 38px;
+            color: var(--accent-cyan);
+            margin-bottom: 15px;
+        }
+
+        #god-toast {
+            position: fixed;
+            bottom: 35px;
+            left: 35px;
+            background: rgba(8, 13, 24, 0.96);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            padding: 16px 30px;
+            border-radius: 14px;
+            font-weight: 800;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.7), 0 0 25px rgba(56, 189, 248, 0.4);
+            display: none;
+            z-index: 1000;
+            animation: godPopup 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes godPopup {
+            from { transform: translateY(30px) scale(0.9); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fa-solid fa-crown" style="color: var(--accent-gold);"></i> RKO // SUPREME
+        </div>
+        <ul class="sidebar-menu">
+            <div class="menu-category">الأنظمة السيادية</div>
+            <li class="active" onclick="switchView('overview', this)"><i class="fa-solid fa-chart-pie"></i> نظرة عامة وحية</li>
+            <li onclick="switchView('modules', this)"><i class="fa-solid fa-cubes" style="color: var(--accent-cyan);"></i> إدارة الوحدات والمميزات <span class="badge-god">PRO</span></li>
+            <li onclick="switchView('tickets', this)"><i class="fa-solid fa-headset"></i> مركز التذاكر الخارق</li>
+            <li onclick="switchView('billing', this)"><i class="fa-solid fa-wallet" style="color: var(--accent-gold);"></i> الدفع عبر Apple Pay <span class="badge-god">PAY</span></li>
+            <li onclick="switchView('broadcast', this)"><i class="fa-solid fa-bullhorn"></i> مركز البرودكاست الحربي</li>
+            <li onclick="switchView('customcmd', this)"><i class="fa-solid fa-terminal" style="color: var(--accent-neon);"></i> الأوامر المخصصة</li>
+
+            <div class="menu-category">الأمن والحماية القصوى</div>
+            <li onclick="switchView('antinuke', this)"><i class="fa-solid fa-shield-halved" style="color: var(--accent-red);"></i> جدار حماية Anti-Nuke</li>
+            <li onclick="switchView('auditlogs', this)"><i class="fa-solid fa-shield-cat"></i> رادار السجلات الحية</li>
+
+            <div class="menu-category">المجتمع والتفاعل</div>
+            <li onclick="switchView('welcome', this)"><i class="fa-solid fa-door-open"></i> الترحيب السينمائي</li>
+            <li onclick="switchView('levels', this)"><i class="fa-solid fa-fire" style="color: #f97316;"></i> نظام التفاعل والمستويات</li>
+            <li onclick="switchView('roles', this)"><i class="fa-solid fa-id-card-clip"></i> رتب التفاعل السريع</li>
+            <li onclick="switchView('staffroles', this)"><i class="fa-solid fa-user-shield" style="color: var(--accent-gold);"></i> صلاحيات لوحة التحكم <span class="badge-god">NEW</span></li>
+        </ul>
+    </div>
+
+    <div class="main-wrapper">
+        <header>
+            <div class="header-title">
+                لوحة القيادة السيادية لـ RKO / <span id="header-tracker">نظرة عامة وحية</span>
+            </div>
+            <div class="user-badge">
+                <div class="avatar-glow"></div>
+                <span style="font-weight: 700; font-size: 14px;">راكان (القائد الأعلى)</span>
+            </div>
+        </header>
+
+        <div class="content-area">
+            
+            <div id="overview" class="section-view active">
+                <div class="god-panel">
+                    <h3><i class="fa-solid fa-bolt" style="color: var(--accent-cyan);"></i> غرفة العمليات الحية لبوت RKO</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h4>إجمالي السيرفرات المتصلة</h4>
+                            <div class="val">24 سيرفر</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>إجمالي الأعضاء تحت الحماية</h4>
+                            <div class="val">18,490 عضو</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>استجابة السيرفر (Ping)</h4>
+                            <div class="val" style="color: var(--accent-green);">14ms</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>حالة الأمان</h4>
+                            <div class="val" style="color: var(--accent-cyan);">مؤمن 100%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- مركز إدارة الوحدات والمميزات (مثل اللي في المقاطع) -->
+            <div id="modules" class="section-view">
+                <div class="god-panel">
+                    <h3><i class="fa-solid fa-cubes"></i> إدارة وتفعيل وحدات ومميزات RKO</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">قم بتفعيل أو تعطيل أي ميزة في سيرفرك بضغطة زر واحدة:</p>
+                    <div class="modules-grid">
+                        <div class="module-card">
+                            <div class="module-info">
+                                <h4>🛡️ الحماية (Anti-Nuke)</h4>
+                                <p>حماية القنوات والرتب</p>
+                            </div>
+                            <label class="switch"><input type="checked" checked onchange="showGodToast('تم تحديث وحدة الحماية!')"><span class="slider"></span></label>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-info">
+                                <h4>🎫 التذاكر (Tickets)</h4>
+                                <p>دعم فني وتذاكر تلقائية</p>
+                            </div>
+                            <label class="switch"><input type="checkbox" checked onchange="showGodToast('تم تحديث وحدة التذاكر!')"><span class="slider"></span></label>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-info">
+                                <h4>📈 المستويات (Leveling)</h4>
+                                <p>نظام التفاعل واللفلات</p>
+                            </div>
+                            <label class="switch"><input type="checkbox" checked onchange="showGodToast('تم تحديث وحدة المستويات!')"><span class="slider"></span></label>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-info">
+                                <h4>👋 الترحيب (Welcome)</h4>
+                                <p>رسائل ترحيب سينمائية</p>
+                            </div>
+                            <label class="switch"><input type="checkbox" checked onchange="showGodToast('تم تحديث وحدة الترحيب!')"><span class="slider"></span></label>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-info">
+                                <h4>💬 الرد التلقائي (Auto-Reply)</h4>
+                                <p>ردود ذكية لكلمات مفتاحية</p>
+                            </div>
+                            <label class="switch"><input type="checkbox" checked onchange="showGodToast('تم تحديث الرد التلقائي!')"><span class="slider"></span></label>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-info">
+                                <h4>🎙️ الغرف المؤقتة (Temp Voice)</h4>
+                                <p>إنشاء غرف صوتية ذكية</p>
+                            </div>
+                            <label class="switch"><input type="checkbox" checked onchange="showGodToast('تم تحديث الغرف الصوتية!')"><span class="slider"></span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tickets" class="section-view">
+                <div class="god-panel">
+                    <h3><i class="fa-solid fa-headset"></i> مركز التذاكر والدعم الفني المتقدم</h3>
+                    <div class="input-grid">
+                        <div class="form-group">
+                            <label>عنوان لوحة التذاكر</label>
+                            <input type="text" class="god-input" value="🎫 مركز الدعم الفني لـ RKO">
+                        </div>
+                        <div class="form-group">
+                            <label>رتبة الإشراف المسؤولة</label>
+                            <select class="god-select">
+                                <option>👑 Owner & Developer</option>
+                                <option>🛡️ Head Administrator</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>رسالة الترحيب داخل التذكرة</label>
+                        <textarea class="god-textarea">أهلاً بك يا عالي المقام في تذاكر RKO.</textarea>
+                    </div>
+                    <button class="god-btn" onclick="showGodToast('🎟️ تم تحديث ونشر نظام التذاكر بنجاح!')">حفظ ونشر التذاكر</button>
+                </div>
+            </div>
+
+            <div id="billing" class="section-view">
+                <div class="god-panel">
+                    <h3><i class="fa-solid fa-wallet" style="color: var(--accent-gold);"></i> بوابة الدفع والاشتراكات (Apple Pay)</h3>
+                    <div class="payment-grid">
+                        <div class="payment-card selected" onclick="selectPayment(this)">
+                            <i class="fa-brands fa-apple-pay"></i>
+                            <h4 style="color:#fff; margin-bottom:5px;">Apple Pay</h4>
+                            <p style="font-size:12px; color:var(--text-muted);">دفع فوري وآمن</p>
+                        </div>
+                    </div>
+                    <button class="god-btn" style="background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color:#000;" onclick="showGodToast('🍏 جاري فتح نافذة Apple Pay للدفع الفوري!')">
+                        <i class="fa-brands fa-apple-pay" style="font-size:22px;"></i> إتمام الدفع عبر Apple Pay
+                    </button>
+                </div>
+            </div>
+
+            <div id="broadcast" class="section-view">
+                <div class="god-panel">
+                    <h3><i class="fa-solid fa-bullhorn"></i> مركز البرودكاست الحربي</h3>
+                    <div class="form-group">
+                        <label>نص الإعلان</label>
+                        <textarea class="god-textarea" placeholder="اكتب نص الإعلان..."></textarea>
+                    </div>
+                    <button class="god-btn" onclick="showGodToast('🚀 تم إرسال البرودكاست لجميع سيرفرات RKO بنجاح!')">إرسال البرودكاست</button>
+                </div>
+            </div>
+
+            <div id="customcmd" class="section-view">
+                <div class="god-panel">
+                    <h3><i class="fa-solid fa-terminal" style="color: var(--accent-neon);"></i> صانع الأوامر المخصصة (Custom Commands)</h3>
+                    <div class="input-grid">
+                        <div class="form-group">
+                            <label>اسم الأمر (Command Name)</label>
+                            <input type="text" class="god-input" placeholder="مثال: !discord أو !store">
+                        </div>
+                        <div class="form-group">
+                            <label>رد البوت (Response Message)</label>
+                            <input type="text" class="god-input" placeholder="الرد الذي سيرسله بوت RKO">
+                        </div>
+                    </div>
+                    <button class="god-btn" onclick="showGodToast('⚡ تمت إضافة الأمر المخصص بنجاح لقاعدة بيانات RKO!')">إضافة وتفعيل الأمر</button>
+                </div>
+            </div>
+
+            <div id="antinuke" class="section-view">
+                <div class="god-panel">
+                    <h3><i class="fa-solid fa-shield-halved" style="color: var(--accent-red);"></i> درع حماية Anti-Nuke</h3>
+                    <button class="god-btn" onclick="showGodToast('🛡️ تم تفعيل جدار حماية Anti-Nuke القاسي!')">تفعيل الدرع التدميري</button>
+                </div>
+            </div>
+
+            <div id="auditlogs" class="section-view">
+                <div class="god-panel">
+                    <h3><i class="fa-solid fa-shield-cat"></i> رادار السجلات الحية</h3>
+                    <p style="color: var(--text-muted);">جميع أنظمة RKO مسجلة ومؤمنة بالكامل.</p>
+                </div>
+            </div>
+
+            <div id="welcome" class="section-view">
+                <div class="god-panel">
+                    <h3><i class="fa-solid fa-door-open"></i> نظام الترحيب السينمائي</h3>
+                    <div class="form-group">
+                        <label>رسالة الترحيب</label>
+                        <input type="text" class="god-input" value="أهلاً بك يا {user} في قصر RKO الشامخ!">
+                    </div>
+                    <button class="god-btn" onclick="showGodToast('✨ تم حفظ إعدادات الترحيب بنجاح!')">حفظ الإعدادات</button>
+                </div>
+            </div>
+
+            <div id="levels" class="section-view">
+                <div class="god-panel">
+                    <h3><i class="fa-solid fa-fire"></i> نظام التفاعل والمستويات</h3>
+                    <button class="god-btn" onclick="showGodToast('🔥 تم تفعيل مضاعف النقاط واللفلات!')">حفظ نظام اللفلات</button>
+                </div>
+            </div>
+
+            <div id="roles" class="section-view">
+                <div class="god-panel">
+                    <h3><i class="fa-solid fa-id-card-clip"></i> رتب التفاعل السريع</h3>
+                    <button class="god-btn" onclick="showGodToast('✨ تم حفظ رتب التفاعل بنجاح!')">حفظ الرتب</button>
+                </div>
+            </div>
+
+            <!-- صلاحيات لوحة التحكم -->
+            <div id="staffroles" class="section-view">
+                <div class="god-panel">
+                    <h3><i class="fa-solid fa-user-shield" style="color: var(--accent-gold);"></i> إدارة صلاحيات لوحة التحكم (Dashboard ACL)</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">تحديد الأفراد أو الرتب التي تملك صلاحية الدخول وتعديل إعدادات بوت RKO:</p>
+                    <div class="form-group">
+                        <label>إضافة رتبة مسموح لها بالتحكم</label>
+                        <input type="text" class="god-input" placeholder="اكتب اسم الرتبة أو الـ ID">
+                    </div>
+                    <button class="god-btn" onclick="showGodToast('👑 تم حفظ وتحديث الصلاحيات بنجاح!')">حفظ الصلاحيات</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="god-toast"></div>
+
+    <script>
+        function switchView(viewId, element) {
+            document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
+            element.classList.add('active');
+
+            document.querySelectorAll('.section-view').forEach(view => view.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+
+            document.getElementById('header-tracker').innerText = element.innerText.trim();
+        }
+
+        function selectPayment(card) {
+            document.querySelectorAll('.payment-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+        }
+
+        function showGodToast(message) {
+            const toast = document.getElementById('god-toast');
+            toast.innerText = message;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
