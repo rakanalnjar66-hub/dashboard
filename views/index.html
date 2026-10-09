@@ -150,16 +150,23 @@
             color: white;
         }
         .btn-danger:hover {
-            background-color: b91c1c;
+            background-color: #b91c1c;
         }
-        /* تنبيه تفاعلي عند الضغط */
+        /* صندوق التنبيه التفاعلي الواضح */
         #alert-box {
             margin-top: 20px;
-            padding: 12px;
+            padding: 15px;
             border-radius: 8px;
             background-color: #1e293b;
-            border: 1px solid #334155;
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+            font-weight: 600;
             display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -196,7 +203,7 @@
                 </div>
                 <div class="stat-card">
                     <h3>عدد السيرفرات</h3>
-                    <div class="value">12 السيرفرات</div>
+                    <div class="value">12 سيرفر</div>
                 </div>
                 <div class="stat-card">
                     <h3>المستخدمين</h3>
@@ -222,6 +229,7 @@
                         <i class="fa-solid fa-power-off"></i> وضع الصيانة
                     </button>
                 </div>
+                <!-- مكان ظهور التنبيه عند الضغط -->
                 <div id="alert-box"></div>
             </div>
         </div>
@@ -232,6 +240,8 @@
             const box = document.getElementById('alert-box');
             box.style.display = 'block';
             box.innerText = text;
+            
+            // إخفاء التنبيه تلقائياً بعد 4 ثواني
             setTimeout(() => {
                 box.style.display = 'none';
             }, 4000);
