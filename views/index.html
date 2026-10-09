@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RKO BOT - Ultimate God-Tier Supreme Dashboard</title>
+    <title>RKO BOT - The Absolute Ultimate Supreme Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -182,14 +182,8 @@
             flex: 1;
         }
 
-        .section-view {
-            display: none;
-        }
-
-        .section-view.active {
-            display: block !important;
-            animation: godFade 0.3s ease;
-        }
+        .section-view { display: none; }
+        .section-view.active { display: block !important; animation: godFade 0.3s ease; }
 
         @keyframes godFade {
             from { opacity: 0; transform: translateY(10px); }
@@ -216,6 +210,50 @@
             align-items: center;
             gap: 12px;
         }
+
+        .servers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .server-card {
+            background: rgba(3, 6, 12, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 22px;
+            transition: 0.3s;
+        }
+
+        .server-card:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.2);
+        }
+
+        .server-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .server-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #1e293b;
+            border: 2px solid var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: #fff;
+        }
+
+        .server-info h4 { color: #fff; font-size: 16px; margin-bottom: 4px; }
+        .server-status { font-size: 12px; color: var(--accent-green); display: flex; align-items: center; gap: 6px; }
 
         .input-grid {
             display: grid;
@@ -250,6 +288,27 @@
             outline: none;
             border-color: var(--accent-cyan);
             box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+        }
+
+        .image-upload-box {
+            border: 2px dashed rgba(56, 189, 248, 0.3);
+            background: rgba(2, 4, 8, 0.5);
+            padding: 25px;
+            border-radius: 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .image-upload-box:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(56, 189, 248, 0.05);
+        }
+
+        .image-upload-box i {
+            font-size: 32px;
+            color: var(--accent-cyan);
+            margin-bottom: 10px;
         }
 
         .god-btn {
@@ -314,6 +373,30 @@
         input:checked + .slider { background-color: var(--accent-cyan); }
         input:checked + .slider:before { transform: translateX(24px); }
 
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .pay-card {
+            background: rgba(3, 6, 12, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .pay-card:hover, .pay-card.selected {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 10px 25px rgba(56, 189, 248, 0.3);
+        }
+
+        .pay-card i { font-size: 30px; color: var(--accent-cyan); margin-bottom: 10px; }
+
         #god-toast {
             position: fixed;
             bottom: 35px;
@@ -345,9 +428,9 @@
         </div>
         <ul class="sidebar-menu">
             <div class="menu-category">التحكم العام</div>
-            <li onclick="switchView('servers', this)"><i class="fa-solid fa-server"></i> إدارة السيرفرات</li>
+            <li onclick="switchView('servers', this)"><i class="fa-solid fa-server"></i> إدارة السيرفرات <span class="badge-god">ACTIVE</span>[cite: 4]</li>
             <li onclick="switchView('overview', this)"><i class="fa-solid fa-chart-pie"></i> نظرة عامة وحية</li>
-            <li onclick="switchView('premium', this)"><i class="fa-solid fa-gem" style="color: var(--accent-cyan);"></i> البريميوم والاشتراكات</li>
+            <li onclick="switchView('premium', this)"><i class="fa-solid fa-gem" style="color: var(--accent-cyan);"></i> البريميوم والاشتراكات <span class="badge-god">APPLE PAY</span></li>
             <li onclick="switchView('modules', this)"><i class="fa-solid fa-cubes"></i> إدارة الوحدات والمميزات</li>
 
             <div class="menu-category">الأنظمة الإمبراطورية</div>
@@ -357,10 +440,10 @@
 
             <div class="menu-category">الأمن والحماية</div>
             <li onclick="switchView('antinuke', this)"><i class="fa-solid fa-shield-halved" style="color: var(--accent-red);"></i> جدار حماية Anti-Nuke</li>
-            <li onclick="switchView('auditlogs', this)"><i class="fa-solid fa-shield-cat"></i> رادار السجلات الحية</li>
+            <li onclick="switchView('auditlogs', this)"><i class="fa-solid fa-shield-cat"></i> رادار السجلات الحية <span class="badge-god">PRO</span></li>
 
             <div class="menu-category">المجتمع والتفاعل</div>
-            <li onclick="switchView('welcome', this)"><i class="fa-solid fa-door-open"></i> الترحيب السينمائي</li>
+            <li onclick="switchView('welcome', this)"><i class="fa-solid fa-door-open"></i> الترحيب السينمائي <span class="badge-god">DM</span></li>
             <li onclick="switchView('levels', this)"><i class="fa-solid fa-fire" style="color: #f97316;"></i> نظام التفاعل والمستويات</li>
             <li onclick="switchView('staffroles', this)"><i class="fa-solid fa-user-shield" style="color: var(--accent-gold);"></i> صلاحيات لوحة التحكم</li>
         </ul>
@@ -368,6 +451,7 @@
 
     <div class="main-wrapper">
         <header>
+            <header>
             <div class="header-title">
                 لوحة القيادة السيادية لـ RKO / <span id="header-tracker">مركز التذاكر الخارق</span>
             </div>
@@ -379,12 +463,22 @@
 
         <div class="content-area">
             
-            <!-- 1. السيرفرات -->
+            <!-- 1. إدارة السيرفرات -->
             <div id="servers" class="section-view">
                 <div class="god-panel">
-                    <h3><i class="fa-solid fa-server"></i> السيرفرات النشطة وتحت إدارتك</h3>
-                    <p style="color: var(--text-muted); margin-bottom: 20px;">إدارة سيرفرات ديسكورد المتصلة ببوت RKO.</p>
-                    <button class="god-btn" onclick="showGodToast('⚡ تم تحديث قائمة السيرفرات!')">تحديث السيرفرات</button>
+                    <h3><i class="fa-solid fa-server"></i> السيرفرات النشطة وتحت إدارتك[cite: 4]</h3>
+                    <div class="servers-grid">
+                        <div class="server-card">
+                            <div class="server-header">
+                                <div class="server-avatar">977</div>
+                                <div class="server-info">
+                                    <h4>Addons 977</h4>
+                                    <div class="server-status"><i class="fa-solid fa-circle" style="font-size:8px;"></i> نشط ومتصل[cite: 4]</div>
+                                </div>
+                            </div>
+                            <button class="god-btn" style="width:100%; justify-content:center;" onclick="showGodToast('⚡ تم الدخول إلى لوحة سيرفر Addons 977!')">إدارة السيرفر[cite: 4]</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -392,42 +486,72 @@
             <div id="overview" class="section-view">
                 <div class="god-panel">
                     <h3><i class="fa-solid fa-bolt" style="color: var(--accent-cyan);"></i> غرفة العمليات الحية</h3>
-                    <p style="color: var(--text-muted);">جميع الأنظمة متصلة بنجاح.</p>
+                    <p style="color: var(--text-muted);">جميع أنظمة RKO متصلة وتعمل بكفاءة تامة 100%.</p>
                 </div>
             </div>
 
-            <!-- 3. البريميوم -->
+            <!-- 3. البريميوم والدفع عبر Apple Pay -->
             <div id="premium" class="section-view">
                 <div class="god-panel">
                     <h3><i class="fa-solid fa-gem"></i> باقات البريميوم والدفع عبر Apple Pay</h3>
-                    <button class="god-btn" style="background:linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color:#000;" onclick="showGodToast('🍏 جاري فتح نافذة Apple Pay!')">
-                        <i class="fa-brands fa-apple-pay"></i> الدفع عبر Apple Pay
+                    <div style="font-size:26px; font-weight:900; color:var(--accent-cyan); margin-bottom:15px;">
+                        18.75 ر.س <span style="font-size:14px; color:var(--text-muted);">/ شهرياً</span>
+                    </div>
+                    <div class="form-group">
+                        <label>كود الخصم أو التفعيل</label>
+                        <div style="display:flex; gap:10px;">
+                            <input type="text" class="god-input" placeholder="أدخل الكود هنا">
+                            <button class="god-btn" onclick="showGodToast('تم تطبيق الكود بنجاح!')">تطبيق</button>
+                        </div>
+                    </div>
+                    <div class="payment-methods">
+                        <div class="pay-card selected" onclick="showGodToast('تم اختيار Apple Pay')">
+                            <i class="fa-brands fa-apple-pay"></i>
+                            <div style="color:#fff; font-weight:700;">Apple Pay</div>
+                        </div>
+                    </div>
+                    <button class="god-btn" style="width:100%; justify-content:center; margin-top:20px; background:linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color:#000;" onclick="showGodToast('🍏 جاري فتح نافذة Apple Pay للدفع الفوري!')">
+                        <i class="fa-brands fa-apple-pay" style="font-size:22px;"></i> اشتراك الآن
                     </button>
                 </div>
             </div>
 
-            <!-- 4. الوحدات -->
+            <!-- 4. إدارة الوحدات -->
             <div id="modules" class="section-view">
                 <div class="god-panel">
-                    <h3><i class="fa-solid fa-cubes"></i> إدارة وتفعيل وحدات RKO</h3>
+                    <h3><i class="fa-solid fa-cubes"></i> إدارة وتفعيل وحدات ومميزات RKO</h3>
                     <div class="modules-grid">
                         <div class="module-card">
-                            <div><h4>🛡️ الحماية</h4><p>حماية القنوات والرتب</p></div>
+                            <div><h4>🛡️ الحماية (Anti-Nuke)</h4><p>حماية القنوات والرتب</p></div>
                             <label class="switch"><input type="checkbox" checked onchange="showGodToast('تم تحديث الحماية!')"><span class="slider"></span></label>
+                        </div>
+                        <div class="module-card">
+                            <div><h4>🎫 التذاكر (Tickets)</h4><p>دعم فني وتذاكر تلقائية</p></div>
+                            <label class="switch"><input type="checkbox" checked onchange="showGodToast('تم تحديث التذاكر!')"><span class="slider"></span></label>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 5. مركز التذاكر الخارق (مع خيار وضع صورة/بانر بالتمام) -->
+            <!-- 5. مركز التذاكر الخارق (مع رفع الصور والبانر الكامل) -->
             <div id="tickets" class="section-view active">
                 <div class="god-panel">
-                    <h3><i class="fa-solid fa-headset"></i> مركز التذاكر والدعم الفني المتقدم</h3>
+                    <h3><i class="fa-solid fa-headset"></i> مركز التذاكر والدعم الفني المتقدم (Tickets Suite)</h3>
                     <div class="input-grid">
                         <div class="form-group">
                             <label>عنوان لوحة التذاكر (Embed Title)</label>
                             <input type="text" class="god-input" value="🎫 مركز الدعم الفني لـ RKO">
                         </div>
+                        <div class="form-group">
+                            <label>قناة إرسال لوحة التذاكر (Channel)</label>
+                            <select class="god-select">
+                                <option># 🎫-tickets (التذاكر الرسمية)</option>
+                                <option># 📢-support (الدعم العام)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="input-grid">
                         <div class="form-group">
                             <label>رتبة الإشراف المسؤولة عن التذاكر</label>
                             <select class="god-select">
@@ -436,67 +560,111 @@
                                 <option>🔨 Support Staff</option>
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label>نص زر فتح التذكرة (Button Label)</label>
+                            <input type="text" class="god-input" value="فتح تذكرة جديدة 🎫">
+                        </div>
                     </div>
+
                     <div class="form-group">
-                        <label>رابط صورة البانر أو الأيقونة (Embed Image URL)</label>
-                        <input type="text" class="god-input" placeholder="https://i.imgur.com/xxxxxx.png" value="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe">
+                        <label>بانر أو صورة التذاكر (Embed Banner / Image URL)</label>
+                        <div class="image-upload-box" onclick="showGodToast('📂 انقر لرفع صورة البانر أو لصق الرابط أدناه')">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <div style="color: #fff; font-weight: 700; margin-bottom: 5px;">اسحب الصورة إلى هنا أو اضغط للرفع</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">يدعم صيغ PNG, JPG, WEBP حتى 10MB</div>
+                        </div>
+                        <input type="text" class="god-input" style="margin-top: 10px;" placeholder="أو الصق رابط الصورة مباشر (Image URL)..." value="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe">
                     </div>
+
                     <div class="form-group">
                         <label>رسالة الترحيب التلقائية داخل التذكرة</label>
-                        <textarea class="god-textarea">أهلاً بك يا عالي المقام في تذاكر RKO الرسمية. يرجى توضيح مشكلتك وسيتم الرد عليك فوراً.</textarea>
+                        <textarea class="god-textarea">أهلاً بك يا عالي المقام في تذاكر RKO الرسمية. يرجى توضيح مشكلتك وسيتم الرد عليك فوراً من قبل طاقم الإشراف.</textarea>
                     </div>
-                    <button class="god-btn" onclick="showGodToast('🎟️ تم حفظ ونشر نظام التذاكر بالصورة والبيانات بنجاح في ديسكورد!')">
-                        <i class="fa-solid fa-paper-plane"></i> حفظ ونشر التذاكر
+
+                    <button class="god-btn" onclick="showGodToast('🎟️ تم نشر لوحة التذاكر مع البانر والصورة في ديسكورد بنجاح تام!')">
+                        <i class="fa-solid fa-paper-plane"></i> حفظ ونشر لوحة التذاكر
                     </button>
                 </div>
             </div>
 
-            <!-- 6. البرودكاست -->
+            <!-- 6. البرودكاست الحربي -->
             <div id="broadcast" class="section-view">
                 <div class="god-panel">
-                    <h3><i class="fa-solid fa-bullhorn"></i> مركز البرودكاست الحربي</h3>
+                    <h3><i class="fa-solid fa-bullhorn"></i> مركز البرودكاست الحربي الشامل</h3>
                     <div class="form-group">
-                        <label>نص الإعلان</label>
-                        <textarea class="god-textarea" placeholder="اكتب نص البرودكاست..."></textarea>
+                        <label>نص الإعلان أو البرودكاست</label>
+                        <textarea class="god-textarea" placeholder="اكتب نص الإعلان..."></textarea>
                     </div>
-                    <button class="god-btn" onclick="showGodToast('🚀 تم إرسال البرودكاست بنجاح!')">إرسال البرودكاست</button>
+                    <button class="god-btn" onclick="showGodToast('🚀 تم إرسال البرودكاست بنجاح لجميع السيرفرات!')">إرسال البرودكاست</button>
                 </div>
             </div>
 
             <!-- 7. الأوامر المخصصة -->
             <div id="customcmd" class="section-view">
                 <div class="god-panel">
-                    <h3><i class="fa-solid fa-terminal"></i> صانع الأوامر المخصصة</h3>
-                    <button class="god-btn" onclick="showGodToast('⚡ تم إضافة الأمر بنجاح!')">إضافة الأمر</button>
+                    <h3><i class="fa-solid fa-terminal"></i> صانع الأوامر المخصصة (Custom Embeds)</h3>
+                    <div class="input-grid">
+                        <div class="form-group">
+                            <label>اسم الأمر</label>
+                            <input type="text" class="god-input" placeholder="!store">
+                        </div>
+                        <div class="form-group">
+                            <label>رد البوت</label>
+                            <input type="text" class="god-input" placeholder="رابط المتجر...">
+                        </div>
+                    </div>
+                    <button class="god-btn" onclick="showGodToast('⚡ تمت إضافة الأمر المخصص بنجاح!')">إضافة الأمر</button>
                 </div>
             </div>
 
             <!-- 8. الحماية Anti-Nuke -->
             <div id="antinuke" class="section-view">
                 <div class="god-panel">
-                    <h3><i class="fa-solid fa-shield-halved"></i> جدار حماية Anti-Nuke</h3>
-                    <p style="color:var(--text-muted); margin-bottom:15px;">حماية قصوى ضد التخريب، طرد الم تخريبين، وحظر حذف الرتب.</p>
-                    <button class="god-btn danger" onclick="showGodToast('🛡️ تم تفعيل درع الحماية القاسي بنجاح!')">تفعيل الدرع التدميري</button>
+                    <h3><i class="fa-solid fa-shield-halved"></i> جدار حماية Anti-Nuke العسكري</h3>
+                    <p style="color:var(--text-muted); margin-bottom:15px;">حماية قصوى ضد التخريب، طرد المخربين، وحظر حذف الرتب.</p>
+                    <button class="god-btn danger" onclick="showGodToast('🛡️ تم تفعيل درع الحماية التدميري بنجاح!')">تفعيل الدرع القاسي</button>
                 </div>
             </div>
 
-            <!-- 9. السجلات -->
+            <!-- 9. رادار السجلات الحية مع الفلترة -->
             <div id="auditlogs" class="section-view">
                 <div class="god-panel">
-                    <h3><i class="fa-solid fa-shield-cat"></i> رادار السجلات الحية</h3>
-                    <p style="color:var(--text-muted);">جميع السجلات مسجلة ومؤمنة بالكامل.</p>
+                    <h3><i class="fa-solid fa-shield-cat"></i> رادار السجلات الحية والفلترة الشاملة</h3>
+                    <div class="input-grid">
+                        <div class="form-group">
+                            <label>اختر نوع الأحداث للتسجيل</label>
+                            <select class="god-select">
+                                <option>جميع الأحداث (All Events)</option>
+                                <option>حذف وإنشاء القنوات (Channels)</option>
+                                <option>تعديل وإضافة الرتب (Roles)</option>
+                                <option>دخول وخروج الأعضاء (Members)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>قناة إرسال السجلات (Logs Channel)</label>
+                            <select class="god-select">
+                                <option># 📊-server-logs</option>
+                                <option># 🔒-security-logs</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="god-btn" onclick="showGodToast('📊 تم تحديث إعدادات السجلات الحية بنجاح!')">حفظ إعدادات السجلات</button>
                 </div>
             </div>
 
-            <!-- 10. الترحيب السينمائي -->
+            <!-- 10. الترحيب السينمائي والرسائل الخاصة DM -->
             <div id="welcome" class="section-view">
                 <div class="god-panel">
-                    <h3><i class="fa-solid fa-door-open"></i> الترحيب السينمائي</h3>
+                    <h3><i class="fa-solid fa-door-open"></i> الترحيب السينمائي والرسائل الخاصة (DM)</h3>
                     <div class="form-group">
-                        <label>رسالة الترحيب</label>
+                        <label>رسالة الترحيب في الشات العام</label>
                         <input type="text" class="god-input" value="أهلاً بك يا {user} في قصر RKO الشامخ!">
                     </div>
-                    <button class="god-btn" onclick="showGodToast('✨ تم حفظ إعدادات الترحيب بنجاح!')">حفظ الترحيب</button>
+                    <div class="form-group">
+                        <label>رسالة الترحيب الخاصة بالخاص (Direct Message)</label>
+                        <input type="text" class="god-input" value="نورت سيرفر RKO! يرجى قراءة القوانين...">
+                    </div>
+                    <button class="god-btn" onclick="showGodToast('✨ تم حفظ إعدادات الترحيب والخاص بنجاح!')">حفظ إعدادات الترحيب</button>
                 </div>
             </div>
 
@@ -504,7 +672,6 @@
             <div id="levels" class="section-view">
                 <div class="god-panel">
                     <h3><i class="fa-solid fa-fire"></i> المستويات والتفاعل (Leveling)</h3>
-                    <p style="color:var(--text-muted); margin-bottom:15px;">نظام نقاط التفاعل والمستويات النارية للأعضاء.</p>
                     <button class="god-btn" onclick="showGodToast('🔥 تم حفظ نظام المستويات وتفعيل المضاعف!')">حفظ نظام المستويات</button>
                 </div>
             </div>
@@ -512,7 +679,7 @@
             <!-- 12. صلاحيات لوحة التحكم -->
             <div id="staffroles" class="section-view">
                 <div class="god-panel">
-                    <h3><i class="fa-solid fa-user-shield"></i> صلاحيات لوحة التحكم</h3>
+                    <h3><i class="fa-solid fa-user-shield"></i> صلاحيات لوحة التحكم (Dashboard ACL)</h3>
                     <button class="god-btn" onclick="showGodToast('👑 تم حفظ صلاحيات الإدارة بنجاح!')">حفظ الصلاحيات</button>
                 </div>
             </div>
