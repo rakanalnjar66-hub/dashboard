@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RKO Dashboard - Ultimate Exact Replica</title>
+    <title>RKO // SUPREME - Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -21,7 +21,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body { background-color: var(--bg-deep); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-        .sidebar { width: 310px; background: rgba(3, 5, 10, 0.99); border-left: 1px solid rgba(255, 255, 255, 0.06); display: flex; flex-direction: column; height: 100vh; z-index: 100; }
+        .sidebar { width: 310px; background: rgba(3, 5, 10, 0.99); border-right: 1px solid rgba(255, 255, 255, 0.06); display: flex; flex-direction: column; height: 100vh; z-index: 100; }
         .sidebar-brand { padding: 22px; font-size: 20px; font-weight: 900; color: var(--accent-cyan); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .sidebar-menu { list-style: none; padding: 15px; overflow-y: auto; flex: 1; }
         .sidebar-menu::-webkit-scrollbar { width: 4px; }
@@ -31,13 +31,16 @@
         .sidebar-menu li { padding: 11px 15px; border-radius: 10px; margin-bottom: 5px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 14px; color: var(--text-muted); font-size: 14px; font-weight: 600; }
         .sidebar-menu li:hover { background: rgba(56, 189, 248, 0.08); color: var(--accent-cyan); }
         .sidebar-menu li.active { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #fff; }
-        .badge-god { background: rgba(251, 191, 36, 0.2); color: #fde047; font-size: 9px; padding: 3px 8px; border-radius: 6px; margin-right: auto; font-weight: 800; }
+        .badge-god { background: rgba(251, 191, 36, 0.2); color: #fde047; font-size: 9px; padding: 3px 8px; border-radius: 6px; margin-left: auto; font-weight: 800; }
 
         .main-wrapper { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         header { background: rgba(8, 13, 24, 0.9); padding: 18px 35px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; height: 75px; }
-        .header-title { font-size: 16px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .header-title { font-size: 15px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 10px; }
         .header-title span { color: var(--accent-cyan); }
         
+        .user-badge { display: flex; align-items: center; gap: 12px; background: rgba(255, 255, 255, 0.03); padding: 6px 18px; border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.08); }
+        .avatar-glow { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(45deg, var(--accent-cyan), var(--accent-gold)); display: flex; align-items: center; justify-content: center; font-weight: 900; color: #000; font-size: 12px; }
+
         .content-area { padding: 35px; overflow-y: auto; flex: 1; }
         .section-view { display: none; }
         .section-view.active { display: block !important; animation: godFade 0.3s ease; }
@@ -48,7 +51,7 @@
 
         .form-group { margin-bottom: 18px; }
         .form-group label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-muted); font-weight: 700; }
-        .god-input, .god-textarea, .god-select { width: 100%; background: rgba(2, 4, 8, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); padding: 14px 18px; border-radius: 12px; color: #fff; font-size: 14px; }
+        .god-input, .god-textarea { width: 100%; background: rgba(2, 4, 8, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); padding: 14px 18px; border-radius: 12px; color: #fff; font-size: 14px; }
         .god-textarea { height: 110px; resize: none; }
 
         .god-btn { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #fff; border: none; padding: 14px 28px; border-radius: 12px; font-weight: 800; font-size: 15px; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; }
@@ -61,217 +64,77 @@
         input:checked + .slider { background-color: var(--accent-cyan); }
         input:checked + .slider:before { transform: translateX(24px); }
 
-        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-bottom: 25px; }
-        .action-card { background: rgba(3, 6, 12, 0.9); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 22px; transition: 0.3s; }
-        .action-card:hover { border-color: var(--accent-cyan); }
+        .preview-box { background: rgba(2, 4, 8, 0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 20px; margin-top: 15px; }
 
         #god-toast { position: fixed; bottom: 35px; left: 35px; background: rgba(8, 13, 24, 0.98); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); padding: 16px 30px; border-radius: 14px; font-weight: 800; display: none; z-index: 3000; }
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
+    <div class="main-wrapper">
+        <header>
+            <div class="header-title">
+                لوحة القيادة لـ Addons 977 / <span id="header-tracker">الرد التلقائي</span>
+            </div>
+            <div class="user-badge">
+                <div class="avatar-glow">RK</div>
+                <span style="font-weight: 700; font-size: 14px;">راكان (المالك)</span>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="god-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3><i class="fa-solid fa-reply"></i> المُشغِّل (Auto-Reply)</h3>
+                    <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+                
+                <div class="form-group">
+                    <label>الاسم (يظهر في لوحة التحكم فقط، ويُسفي الرد في قائمتك)</label>
+                    <input type="text" class="god-input" placeholder="مثال: التحية">
+                </div>
+
+                <div class="form-group">
+                    <label>التشغيل عند</label>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <button class="god-btn" style="padding: 8px 16px; font-size: 13px;">T نص</button>
+                        <button class="god-btn" style="padding: 8px 16px; font-size: 13px; background: #1e293b;"># قناة</button>
+                    </div>
+                    <input type="text" class="god-input" placeholder="مثال: السلام عليكم">
+                </div>
+
+                <div class="form-group">
+                    <label>الرد (Embed & Message Builder)</label>
+                    <div class="preview-box">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                            <div class="avatar-glow" style="width: 28px; height: 28px; font-size: 10px;">ZMN</div>
+                            <span style="font-weight: 700; font-size: 13px;">ZMN Bot</span>
+                            <span style="background: #5865f2; color: #fff; font-size: 9px; padding: 2px 6px; border-radius: 4px;">BOT</span>
+                            <span style="font-size: 11px; color: var(--text-muted);">اليوم الساعة 12:00 ص</span>
+                        </div>
+                        <textarea class="god-textarea" placeholder="اكتب رسالتك هنا..."></textarea>
+                    </div>
+                    <button class="god-btn" style="margin-top: 15px;"><i class="fa-solid fa-plus"></i> إضافة إمبد</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar" style="order: 2;">
         <div class="sidebar-brand">
             <i class="fa-solid fa-crown" style="color: var(--accent-gold);"></i> RKO // SUPREME
         </div>
         <ul class="sidebar-menu">
             <div class="menu-category">المجتمع</div>
-            <li onclick="switchView('autoreply', this)"><i class="fa-solid fa-reply"></i> الرد التلقائي <span class="badge-god">NEW</span>[cite: 12]</li>
-            <li onclick="switchView('hiring', this)"><i class="fa-solid fa-briefcase"></i> التوظيف[cite: 13]</li>
-            <li onclick="switchView('voicechannels', this)"><i class="fa-solid fa-microphone"></i> القنوات الصوتية المؤقتة[cite: 14, 15, 16]</li>
-
+            <li class="active"><i class="fa-solid fa-reply"></i> الرد التلقائي <span class="badge-god">NEW</span></li>
+            <li><i class="fa-solid fa-briefcase"></i> التوظيف</li>
+            <li><i class="fa-solid fa-microphone"></i> القنوات الصوتية المؤقتة</li>
             <div class="menu-category">التخصيص والنظام</div>
-            <li class="active" onclick="switchView('ticketsystem', this)"><i class="fa-solid fa-headset"></i> نظام التذاكر[cite: 17, 18, 19, 20] <span class="badge-god">VIP</span></li>
-            <li onclick="switchView('applications', this)"><i class="fa-solid fa-file-lines"></i> التقديمات[cite: 21] <span class="badge-god">NEW</span></li>
+            <li><i class="fa-solid fa-headset"></i> نظام التذاكر <span class="badge-god" style="background:rgba(56,189,248,0.2); color:var(--accent-cyan);">VIP</span></li>
+            <li><i class="fa-solid fa-file-lines"></i> التقديمات <span class="badge-god">NEW</span></li>
         </ul>
     </div>
 
-    <div class="main-wrapper">
-        <header>
-            <div class="header-title">
-                لوحة القيادة لـ Addons 977 / <span id="header-tracker">نظام التذاكر</span>
-            </div>
-            <div style="font-weight: 700; font-size: 14px; color: var(--accent-cyan);">راكان (المالك)</div>
-        </header>
-
-        <div class="content-area">
-            
-            <!-- 1. الرد التلقائي (Auto Reply) -->
-            <div id="autoreply" class="section-view">
-                <div class="god-panel">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h3><i class="fa-solid fa-reply"></i> المُشغِّل (Auto-Reply)</h3>
-                        <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-                    </div>
-                    <div class="form-group">
-                        <label>الاسم (يظهر في لوحة التحكم فقط، ويُسفي الرد في قائمتك)</label>
-                        <input type="text" class="god-input" placeholder="مثال: التحية">
-                    </div>
-                    <div class="form-group">
-                        <label>التشغيل عند</label>
-                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                            <button class="god-btn" style="padding: 8px 16px; font-size: 13px;">T نص</button>
-                            <button class="god-btn" style="padding: 8px 16px; font-size: 13px; background: #1e293b;"># قناة</button>
-                        </div>
-                        <input type="text" class="god-input" placeholder="مثال: السلام عليكم">
-                    </div>
-                    <div class="form-group">
-                        <label>الرد (Embed & Message Builder)</label>
-                        <textarea class="god-textarea" placeholder="اكتب رسالتك هنا..."></textarea>
-                        <button class="god-btn" style="margin-top: 10px;"><i class="fa-solid fa-plus"></i> إضافة إمبد</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2. التوظيف (Hiring) -->
-            <div id="hiring" class="section-view">
-                <div class="god-panel">
-                    <h3><i class="fa-solid fa-briefcase"></i> التوظيف والترقية والإنذارات والإنهاء[cite: 13]</h3>
-                    <div class="form-group">
-                        <label>اختر رتب المدراء</label>
-                        <select class="god-select"><option>اختر رتبة...</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label>مشرفو اللوحات</label>
-                        <select class="god-select"><option>اختر مشرفاً...</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label>قناة السجلات</label>
-                        <select class="god-select"><option>اختر قناة السجلات...</option></select>
-                    </div>
-                    <button class="god-btn" onclick="showGodToast('✅ تم حفظ إعدادات التوظيف بنجاح')">حفظ التغييرات</button>
-                </div>
-            </div>
-
-            <!-- 3. القنوات الصوتية المؤقتة (Temporary Voice Hubs & Commands)[cite: 14, 15, 16] -->
-            <div id="voicechannels" class="section-view">
-                <div class="god-panel">
-                    <h3><i class="fa-solid fa-microphone"></i> المحاور (Hubs) وقالب اسم القناة[cite: 14, 15]</h3>
-                    <div class="form-group">
-                        <label>اسم المحور</label>
-                        <input type="text" class="god-input" placeholder="مثال: محور الألعاب، غرف الدراسة[cite: 14]">
-                    </div>
-                    <div class="form-group">
-                        <label>قالب اسم القناة</label>
-                        <input type="text" class="god-input" value="Temp {index} - {username}">
-                    </div>
-
-                    <h3 style="margin-top: 30px;"><i class="fa-solid fa-terminal"></i> أوامر إدارة القنوات الصوتية[cite: 16]</h3>
-                    <div class="cards-grid">
-                        <div class="action-card">
-                            <div class="card-top">
-                                <span class="card-title">/voice-ban</span>
-                                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-                            </div>
-                            <div class="card-desc">حظر مستخدم من قناة مؤقتة[cite: 16]</div>
-                        </div>
-                        <div class="action-card">
-                            <div class="card-top">
-                                <span class="card-title">/voice-claim</span>
-                                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-                            </div>
-                            <div class="card-desc">المطالبة بملكية قناة مهجورة[cite: 16]</div>
-                        </div>
-                        <div class="action-card">
-                            <div class="card-top">
-                                <span class="card-title">/voice-lock</span>
-                                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-                            </div>
-                            <div class="card-desc">قفل قناة مؤقتة (منع الانضمام)[cite: 16]</div>
-                        </div>
-                        <div class="action-card">
-                            <div class="card-top">
-                                <span class="card-title">/voice-hide</span>
-                                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-                            </div>
-                            <div class="card-desc">إخفاء القناة من قائمة القنوات[cite: 16]</div>
-                        </div>
-                    </div>
-                    <button class="god-btn" onclick="showGodToast('🎙️ تم حفظ إعدادات القنوات الصوتية بنجاح')">حفظ التغييرات</button>
-                </div>
-            </div>
-
-            <!-- 4. نظام التذاكر والإحصائيات (Tickets & Stats)[cite: 17, 18, 19, 20] -->
-            <div id="ticketsystem" class="section-view active">
-                <div class="god-panel">
-                    <h3><i class="fa-solid fa-headset"></i> إحصائيات وإدارة التذاكر (Tickets Dashboard)[cite: 17, 18]</h3>
-                    
-                    <div class="cards-grid">
-                        <div class="action-card" style="border-right: 4px solid var(--accent-cyan);">
-                            <h4>إجمالي التذاكر</h4>
-                            <div style="font-size: 26px; font-weight: 900; margin-top: 8px;">26</div>
-                        </div>
-                        <div class="action-card" style="border-right: 4px solid var(--accent-green);">
-                            <h4>متوسط الاستجابة</h4>
-                            <div style="font-size: 26px; font-weight: 900; margin-top: 8px;">0 min</div>
-                        </div>
-                        <div class="action-card" style="border-right: 4px solid var(--accent-gold);">
-                            <h4>متوسط وقت الحل</h4>
-                            <div style="font-size: 26px; font-weight: 900; margin-top: 8px;">0 hrs</div>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 25px;">
-                        <h4 style="margin-bottom: 15px; color: var(--text-muted);">أحدث التذاكر المسجلة في السيرفر[cite: 17]</h4>
-                        <div style="background: rgba(2,4,8,0.7); padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <strong style="color: #fff;">General Support #26</strong>
-                                <div style="font-size: 12px; color: var(--text-muted);">أنشئت 2026/8/25 بواسطة 5l_e7[cite: 17]</div>
-                            </div>
-                            <span style="background: rgba(239, 68, 68, 0.2); color: #ef4444; padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;">closed[cite: 17]</span>
-                        </div>
-                        <div style="background: rgba(2,4,8,0.7); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <strong style="color: #fff;">Store #25</strong>
-                                <div style="font-size: 12px; color: var(--text-muted);">أنشئت 2026/8/23 بواسطة bw.6[cite: 17]</div>
-                            </div>
-                            <span style="background: rgba(239, 68, 68, 0.2); color: #ef4444; padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;">closed[cite: 17]</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 5. التقديمات (Applications)[cite: 21] -->
-            <div id="applications" class="section-view">
-                <div class="god-panel">
-                    <h3><i class="fa-solid fa-file-lines"></i> التقديمات والنماذج الحصرية[cite: 21]</h3>
-                    <p style="color: var(--text-muted); margin-bottom: 20px;">أنشئ نماذج تقديم يملؤها الأعضاء من ديسكورد أو من الويب[cite: 21].</p>
-                    <button class="god-btn" onclick="showGodToast('📝 تم إنشاء نموذج تقديم جديد بنجاح')"><i class="fa-solid fa-plus"></i> تقديم جديد</button>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
     <div id="god-toast"></div>
-
-    <script>
-        function switchView(viewId, element) {
-            document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
-            if(element) element.classList.add('active');
-
-            document.querySelectorAll('.section-view').forEach(view => {
-                view.classList.remove('active');
-                view.style.display = 'none';
-            });
-
-            const target = document.getElementById(viewId);
-            if(target) {
-                target.style.display = 'block';
-                target.classList.add('active');
-            }
-
-            if(element) {
-                document.getElementById('header-tracker').innerText = element.innerText.trim();
-            }
-        }
-
-        function showGodToast(message) {
-            const toast = document.getElementById('god-toast');
-            toast.innerText = message;
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3500);
-        }
-    </script>
 </body>
 </html>
