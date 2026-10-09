@@ -1,158 +1,443 @@
-import os, zipfile, textwrap
+from pathlib import Path
+import zipfile, json, re, os, textwrap
 
-base = "/mnt/data/server-admin-dashboard"
-os.makedirs(base, exist_ok=True)
+out = Path("/mnt/data/rko-dashboard-fixed")
+out.mkdir(parents=True, exist_ok=True)
 
-app = r'''import React, { useEffect, useMemo, useState } from "react";
-import "./dashboard.css";
+html = r'''<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="html-root">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080b10">
+<title>RKO Supreme — لوحة الإدارة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#080b10;--panel:#11161d;--panel2:#151b23;--line:#252d38;--cyan:#06c7e8;--cyan2:#0891b2;--gold:#fbbf24;--green:#22c55e;--red:#fb5263;--text:#edf5fb;--muted:#8b98a9;--radius:16px;--sidebar:280px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 10% 0%,#0b2731 0,transparent 30%),radial-gradient(ellipse at 90% 100%,#201b0c 0,transparent 25%),var(--bg);color:var(--text);font-family:'Cairo',sans-serif;min-height:100vh}button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}a{color:inherit}.app{min-height:100vh}.sidebar{position:fixed;inset:0 0 0 auto;width:var(--sidebar);background:#090d12;border-left:1px solid var(--line);z-index:30;display:flex;flex-direction:column;transition:transform .25s}.brand{display:flex;align-items:center;gap:12px;padding:22px 20px;border-bottom:1px solid var(--line)}.brand-mark{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;color:#031116;background:linear-gradient(135deg,var(--cyan),#5deaff);box-shadow:0 0 24px #06c7e82b;font-size:19px}.brand strong{display:block;font-weight:900;letter-spacing:.3px}.brand small{color:var(--muted);font-size:11px}.server-chip{margin:14px 14px 2px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);display:flex;align-items:center;gap:10px}.server-icon{width:36px;height:36px;border-radius:10px;background:#12232b;color:var(--cyan);display:grid;place-items:center}.server-chip strong{font-size:12px;display:block}.server-chip small{font-size:10px;color:var(--muted)}.nav{padding:8px 12px 18px;overflow:auto;flex:1}.nav-group{margin:16px 8px 7px;color:#647386;font-size:10px;font-weight:800;letter-spacing:.6px}.nav button{width:100%;border:1px solid transparent;background:transparent;color:#a9b5c3;display:flex;align-items:center;gap:12px;text-align:right;padding:11px 12px;border-radius:11px;margin:3px 0;font-size:12px;transition:.18s}.nav button i{width:18px;text-align:center;color:#718296}.nav button:hover{background:#111b23;color:#fff;border-color:#1d3440}.nav button.active{background:linear-gradient(100deg,#0b303a,#10212a);border-color:#0d5d6d;color:#e8fcff;box-shadow:inset -3px 0 var(--cyan)}.nav button.active i{color:var(--cyan)}.nav .nav-badge{margin-right:auto;font-size:9px;border-radius:5px;padding:2px 6px;color:var(--gold);background:#3a2c0e}.sidebar-footer{padding:14px;border-top:1px solid var(--line);color:var(--muted);font-size:10px;display:flex;justify-content:space-between;align-items:center}.online-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-left:6px;box-shadow:0 0 9px #22c55e88}
+.main{margin-right:var(--sidebar);min-height:100vh;display:flex;flex-direction:column}.topbar{height:76px;position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 28px;background:#090d12dd;backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}.top-left,.top-right{display:flex;align-items:center;gap:10px}.page-heading{font-weight:800;font-size:17px}.page-heading small{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:1px}.icon-btn,.ghost-btn{border:1px solid var(--line);color:#c6d0db;background:#121820;border-radius:10px;min-height:38px;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;gap:8px}.icon-btn{width:40px;padding:0}.ghost-btn:hover,.icon-btn:hover{border-color:#17758a;color:var(--cyan)}.user-pill{display:flex;align-items:center;gap:9px;padding:5px 10px;border:1px solid var(--line);border-radius:30px;background:#10161d;font-size:12px}.avatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--cyan),#1e5363);color:#041014;font-weight:900}.mobile-menu{display:none}.content{padding:26px;max-width:1600px;width:100%;margin:0 auto}.view{display:none;animation:fade .22s ease}.view.active{display:block}@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}.welcome-row{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:22px}.eyebrow{font-size:10px;letter-spacing:1px;color:var(--cyan);font-weight:800}.welcome-row h1{font-size:24px;margin:3px 0 5px}.welcome-row p{margin:0;color:var(--muted);font-size:12px}.row-actions{display:flex;gap:8px;flex-wrap:wrap}.primary-btn,.danger-btn,.gold-btn{border:1px solid transparent;border-radius:10px;padding:10px 15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:12px;font-weight:800;transition:.18s}.primary-btn{color:#021116;background:linear-gradient(135deg,#1bd5ed,#04a6c7);box-shadow:0 5px 18px #06c7e820}.primary-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}.danger-btn{background:#35151b;color:#ff9ca6;border-color:#662631}.gold-btn{background:linear-gradient(135deg,#facc15,#d97706);color:#211600}.panel{background:linear-gradient(145deg,#141a21,#10151b);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:18px;box-shadow:0 12px 30px #00000012}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:18px}.panel-head h2,.panel h2{font-size:14px;margin:0;font-weight:800}.panel-head p{font-size:11px;color:var(--muted);margin:4px 0 0}.panel-head .head-icon{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--line);border-radius:11px;color:var(--cyan);background:#0d2027}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:18px}.stat{background:linear-gradient(145deg,#151d25,#10151b);border:1px solid var(--line);border-radius:15px;padding:17px;min-width:0}.stat-top{display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:11px}.stat-icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#0c2c35;color:var(--cyan)}.stat-value{font-size:26px;font-weight:900;margin:12px 0 1px;letter-spacing:.2px}.stat-note{font-size:10px;color:var(--muted)}.positive{color:var(--green)}.grid-2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.85fr);gap:18px}.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.feature-card{padding:17px;border:1px solid var(--line);border-radius:13px;background:#0e141a;min-width:0}.feature-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}.feature-top h3{font-size:12px;margin:0}.feature-card p{font-size:11px;line-height:1.8;color:var(--muted);margin:0 0 13px}.tag{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:7px;font-size:9px;background:#14251d;color:#7de4a0;border:1px solid #224a34}.tag.cyan{background:#10262d;color:#62e8fb;border-color:#174754}.tag.gold{background:#2a210e;color:#fbd66b;border-color:#554217}.tag.red{background:#2b171c;color:#ff9da8;border-color:#54242d}.chart{height:190px;width:100%;display:flex;align-items:flex-end;gap:12px;padding:20px 4px 0;border-bottom:1px solid var(--line);background:repeating-linear-gradient(to bottom,transparent 0,transparent 46px,#ffffff08 47px,#ffffff08 48px)}.bar-wrap{height:100%;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px;min-width:0}.bar{width:min(34px,70%);min-height:6px;border-radius:7px 7px 2px 2px;background:linear-gradient(180deg,#31d9ee,#087d9a);box-shadow:0 0 18px #06c7e820;transition:height .4s}.bar-label{font-size:10px;color:var(--muted)}.activity-list{display:grid;gap:0}.activity{display:flex;align-items:flex-start;gap:11px;padding:12px 0;border-bottom:1px solid #ffffff0a}.activity:last-child{border:0}.activity-icon{width:30px;height:30px;display:grid;place-items:center;background:#10262d;border-radius:9px;color:var(--cyan);flex-shrink:0}.activity strong{font-size:11px;display:block}.activity small{font-size:10px;color:var(--muted)}.activity time{margin-right:auto;color:#718093;font-size:9px;white-space:nowrap}.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:15px}.search{flex:1;min-width:180px;position:relative}.search i{position:absolute;right:13px;top:50%;transform:translateY(-50%);color:#667587}.field,.search input,select.field,textarea.field{width:100%;background:#0b1016;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:12px}.search input{padding-right:38px}.field:focus,.search input:focus{border-color:#0d8096;outline:none;box-shadow:0 0 0 3px #06c7e812}.field::placeholder,.search input::placeholder{color:#586677}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.form-group{min-width:0;margin-bottom:14px}.form-group label{display:block;font-size:11px;font-weight:700;color:#b4c0ce;margin-bottom:7px}.form-group .hint{font-size:10px;color:var(--muted);margin-top:6px;line-height:1.7}.field-area{min-height:105px;resize:vertical}.check-row{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:13px 0;border-bottom:1px solid #ffffff0a}.check-row:last-child{border-bottom:0}.check-row strong{display:block;font-size:12px}.check-row small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.switch{position:relative;width:44px;height:24px;display:inline-flex;flex-shrink:0}.switch input{position:absolute;opacity:0;width:1px;height:1px}.switch span{position:absolute;inset:0;background:#29323d;border:1px solid #3a4654;border-radius:30px;transition:.2s;cursor:pointer}.switch span:after{content:"";position:absolute;top:2px;right:2px;width:18px;height:18px;background:#c5d0dc;border-radius:50%;transition:.2s}.switch input:checked+span{background:#078da7;border-color:#13bfd8;box-shadow:0 0 14px #06c7e81c}.switch input:checked+span:after{transform:translateX(-20px);background:white}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:580px;text-align:right}th,td{padding:13px 14px;border-bottom:1px solid #ffffff0a;font-size:11px;white-space:nowrap}th{color:#8e9cad;font-size:10px;background:#0c1117;font-weight:800}tbody tr:hover{background:#ffffff04}tbody tr:last-child td{border-bottom:0}.empty{text-align:center;color:var(--muted);padding:35px!important}.actions{display:flex;gap:6px}.small-btn{border:1px solid var(--line);background:#141b23;color:#bdc8d4;border-radius:8px;padding:6px 9px;font-size:10px}.small-btn:hover{color:var(--cyan);border-color:#176273}.small-btn.delete:hover{color:#ff9da8;border-color:#77303a}.tab-row{display:flex;gap:7px;overflow:auto;padding-bottom:12px;margin-bottom:18px;border-bottom:1px solid var(--line)}.tab-btn{flex-shrink:0;border:1px solid var(--line);background:#0c1218;color:#9eabba;border-radius:9px;padding:9px 13px;font-size:11px}.tab-btn.active{background:#10313a;border-color:#0d6d80;color:#7deeff}.notice{display:flex;align-items:flex-start;gap:10px;border:1px solid #165060;background:#0b2027;border-radius:12px;padding:13px;color:#9feaf6;font-size:11px;line-height:1.8;margin-bottom:16px}.notice i{margin-top:3px}.footer-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:15px;margin-top:8px}.muted{color:var(--muted)}.small{font-size:10px}.progress{height:6px;background:#252d36;border-radius:8px;overflow:hidden}.progress span{display:block;height:100%;width:62%;background:linear-gradient(90deg,var(--cyan2),var(--cyan));border-radius:8px}.toast{position:fixed;bottom:22px;left:22px;z-index:100;display:flex;align-items:center;gap:10px;max-width:min(420px,calc(100vw - 32px));padding:13px 16px;border:1px solid #176778;border-radius:12px;background:#0c1b22;color:#c6f9ff;box-shadow:0 15px 45px #0008;opacity:0;transform:translateY(12px);pointer-events:none;transition:.22s;font-size:12px}.toast.show{opacity:1;transform:none}.toast.error{border-color:#77303a;background:#261318;color:#ffbbc2}.modal-backdrop{position:fixed;inset:0;z-index:80;background:#020509d9;backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:18px}.modal-backdrop.open{display:flex}.modal{width:min(500px,100%);background:#10161d;border:1px solid #2a3c48;border-radius:18px;padding:22px;box-shadow:0 30px 90px #000b}.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}.modal-head h2{font-size:16px;margin:0}.close-btn{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:#161e27;color:#aab7c5}.modal-foot{display:flex;justify-content:flex-start;gap:8px;margin-top:18px}.server-status{display:flex;align-items:center;gap:7px;font-size:10px;color:#89e8a6}.light-mode{--bg:#eef3f7;--panel:#fff;--panel2:#f7f9fb;--line:#d9e1e9;--text:#15202b;--muted:#68788a;color-scheme:light;background:radial-gradient(ellipse at 10% 0%,#d8f5fa 0,transparent 30%),var(--bg);color:var(--text)}.light-mode .sidebar,.light-mode .topbar{background:#f8fafc}.light-mode .panel,.light-mode .stat,.light-mode .feature-card{background:#fff}.light-mode .field,.light-mode .search input,.light-mode .tab-btn,.light-mode .ghost-btn,.light-mode .icon-btn,.light-mode .user-pill{background:#f8fafc;color:#182433}.light-mode .nav button{color:#536273}.light-mode .nav button.active{background:#dff8fc;color:#07566a}.light-mode th{background:#f4f7fa}.light-mode .brand small,.light-mode .page-heading small{color:#68788a}
+@media(max-width:1150px){:root{--sidebar:245px}.content{padding:20px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}.topbar{padding:0 18px}}
+@media(max-width:820px){:root{--sidebar:280px}.sidebar{transform:translateX(102%);box-shadow:-20px 0 50px #0007}.sidebar.open{transform:translateX(0)}.main{margin-right:0}.mobile-menu{display:inline-flex}.topbar{height:68px;padding:0 14px}.user-pill .user-name{display:none}.content{padding:16px}.welcome-row{flex-direction:column}.grid-2{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr}.page-heading{font-size:14px}.top-right .hide-mobile{display:none}}
+@media(max-width:520px){.stats{grid-template-columns:1fr 1fr;gap:9px}.stat{padding:12px}.stat-value{font-size:22px}.panel{padding:14px}.form-grid{grid-template-columns:1fr}.welcome-row h1{font-size:21px}.row-actions{width:100%}.row-actions button{flex:1}.topbar{gap:8px}.top-left{gap:7px}.page-heading small{display:none}.content{padding:12px}.panel-head{align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="brand-mark"><i class="fa-solid fa-crown"></i></div><div><strong>RKO // SUPREME</strong><small>لوحة إدارة السيرفر</small></div></div>
+  <div class="server-chip"><div class="server-icon"><i class="fa-brands fa-discord"></i></div><div><strong id="server-name-chip">Addons 977</strong><small><span class="online-dot"></span>واجهة محلية — غير متصلة بDiscord</small></div></div>
+  <nav class="nav" id="nav">
+    <div class="nav-group">الرئيسية</div>
+    <button class="active" data-view="overview"><i class="fa-solid fa-chart-pie"></i><span>نظرة عامة</span></button>
+    <button data-view="servers"><i class="fa-solid fa-server"></i><span>السيرفرات</span></button>
+    <div class="nav-group">إدارة الأنظمة</div>
+    <button data-view="tickets"><i class="fa-solid fa-ticket"></i><span>التذاكر والرومات</span><span class="nav-badge">VIP</span></button>
+    <button data-view="antinuke"><i class="fa-solid fa-shield-halved"></i><span>الحماية Anti-Nuke</span></button>
+    <button data-view="attendance"><i class="fa-solid fa-user-clock"></i><span>الحضور والإجازات</span></button>
+    <button data-view="welcome"><i class="fa-solid fa-door-open"></i><span>الترحيب والرسائل</span></button>
+    <button data-view="templates"><i class="fa-solid fa-store"></i><span>متجر القوالب</span></button>
+    <div class="nav-group">التخصيص والإدارة</div>
+    <button data-view="custombot"><i class="fa-solid fa-robot"></i><span>تخصيص البوت</span><span class="nav-badge">NEW</span></button>
+    <button data-view="users"><i class="fa-solid fa-users"></i><span>المستخدمون</span></button>
+    <button data-view="premium"><i class="fa-solid fa-gem"></i><span>البريميوم</span></button>
+    <button data-view="profile"><i class="fa-solid fa-user-gear"></i><span>الملف الشخصي</span></button>
+    <button data-view="settings"><i class="fa-solid fa-sliders"></i><span>الإعدادات والنسخ الاحتياطي</span></button>
+  </nav>
+  <div class="sidebar-footer"><span><span class="online-dot"></span>النظام يعمل محلياً</span><span>v2.0</span></div>
+</aside>
 
-const initialTemplates = [
-  { id: 1, name: "سيرفر عام", category: "المجتمع", description: "سيرفر مجتمعي متكامل مع قنوات أساسية.", channels: 85, roles: 15, members: 47, icon: "🎮", featured: true },
-  { id: 2, name: "سيرفر محترفين", category: "الألعاب", description: "مساحة منظمة للاعبين والفرق التنافسية.", channels: 24, roles: 5, members: 9, icon: "🎮", featured: true },
-  { id: 3, name: "سيرفر لك ولأصدقائك", category: "المجتمع", description: "جلسات يومية وغرف صوتية وذكريات مشتركة.", channels: 56, roles: 12, members: 14, icon: "🧑‍🤝‍🧑", featured: true },
-  { id: 4, name: "سيرفر المجتمعات", category: "الأعمال", description: "هيكل مرتب للمجتمعات والمشاريع.", channels: 31, roles: 5, members: 12, icon: "🗂️", featured: false },
-  { id: 5, name: "سيرفر كويسين وألعاب", category: "الألعاب", description: "قنوات ألعاب ومحادثات وترتيب واضح.", channels: 101, roles: 22, members: 35, icon: "💎", featured: true },
-  { id: 6, name: "سيرفر بسيط", category: "أخرى", description: "بداية سريعة بقنوات أساسية قابلة للتخصيص.", channels: 6, roles: 4, members: 25, icon: "🗂️", featured: false },
-];
-const navGroups = [
-  { title: "المجتمع", items: [["الترحيب والمغادرة", "heart"], ["نظام المستويات", "trending-up"], ["السحوبات", "gift"], ["إدارة الرتب", "users"], ["الأذكار", "book-open"], ["التفاعل", "mouse-pointer"], ["الرد التلقائي", "message-square"]] },
-  { title: "التخصيص", items: [["التوظيف", "crown"], ["القنوات الصوتية المؤقتة", "radio"], ["نظام التذاكر", "ticket"], ["التقييمات", "clipboard-list"], ["الإيمبدات", "layers"], ["الحضور", "clock"]] },
-  { title: "الإدارة", items: [["أدوات لوحة التحكم", "sliders"], ["القوالب", "layout-grid"]] },
-];
-const initialBoards = [{ id: 1, name: "الحضور الرئيسي", shortcut: "Sign In / Sign Out", enabled: true, roles: ["Admin", "Moderator"], serviceRole: "Member" }];
-const initialPeople = [{ id: "1238026112622137368", name: "مستخدم تجريبي", allowed: true }];
+<main class="main">
+  <header class="topbar">
+    <div class="top-left">
+      <button class="icon-btn mobile-menu" id="mobile-menu" aria-label="فتح القائمة"><i class="fa-solid fa-bars"></i></button>
+      <div class="page-heading"><span id="page-title">نظرة عامة</span><small id="page-subtitle">ملخص سريع لحالة لوحة الإدارة</small></div>
+    </div>
+    <div class="top-right">
+      <button class="ghost-btn hide-mobile" id="export-top"><i class="fa-solid fa-download"></i> تصدير نسخة</button>
+      <button class="icon-btn" id="theme-toggle" title="تبديل المظهر" aria-label="تبديل المظهر"><i class="fa-solid fa-moon"></i></button>
+      <button class="icon-btn" id="notifications" title="التنبيهات" aria-label="التنبيهات"><i class="fa-regular fa-bell"></i></button>
+      <div class="user-pill"><div class="avatar">RK</div><span class="user-name" id="owner-name-top">المالك</span></div>
+    </div>
+  </header>
 
-function load(key, fallback) {
-  try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; }
-  catch { return fallback; }
-}
-function Icon({ name = "dot", size = 18 }) {
-  const paths = {
-    grid: <><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></>,
-    home: <><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9M9 20v-7h6v7"/></>,
-    users: <><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></>,
-    clock: <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></>,
-    ticket: <><path d="M3 8a2 2 0 0 0 0 4v4h18v-4a2 2 0 0 1 0-4V4H3z"/><path d="M13 4v2m0 4v2m0 4v2"/></>,
-    layers: <><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/></>,
-    settings: <><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.7a8 8 0 0 1-1.6.9L16 21h-8l-.2-2.2a8 8 0 0 1-1.6-.9l-1.7.7-1.4-2.4 1.4-1.1a8 8 0 0 1 0-1.9l-1.4-1.1 1.4-2.4 1.7.7a8 8 0 0 1 1.6-.9L8 7h8l.2 2.2a8 8 0 0 1 1.6.9l1.7-.7 1.4 2.4-1.4 1.1a8 8 0 0 1-.1 2.1Z"/></>,
-    heart: <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/>,
-    "trending-up": <><path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/></>,
-    gift: <><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M2 8h20v4H2zM12 8H7a2.5 2.5 0 1 1 2.5-2.5C9.5 7 12 8 12 8Zm0 0h5a2.5 2.5 0 1 0-2.5-2.5C14.5 7 12 8 12 8Z"/></>,
-    "book-open": <><path d="M12 7v14M3 4h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5v15h-5a4 4 0 0 0-4 2 4 4 0 0 0-4-2H3z"/></>,
-    "mouse-pointer": <path d="m5 3 14 11-7 1-3 6z"/>,
-    "message-square": <path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 9 9 0 0 1-4-.9L3 21l1.9-5.5a9 9 0 0 1-.9-4A8.5 8.5 0 0 1 12.5 3h.5a8.5 8.5 0 0 1 8 8z"/>,
-    crown: <><path d="m2 7 5 4 5-8 5 8 5-4-2 13H4z"/><path d="M4 21h16"/></>,
-    radio: <><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8a6 6 0 0 1 0 8.4M7.8 16.2a6 6 0 0 1 0-8.4M19 5a10 10 0 0 1 0 14M5 19A10 10 0 0 1 5 5"/></>,
-    "clipboard-list": <><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2M8 10h8M8 14h8M8 18h4"/></>,
-    "layout-grid": <><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="11" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/></>,
-    search: <><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></>,
-    plus: <><path d="M12 5v14M5 12h14"/></>,
-    trash: <><path d="M3 6h18M8 6V4h8v2m3 0-1 15H6L5 6m4 4v7m6-7v7"/></>,
-    edit: <><path d="m15 5 4 4M4 20l4-.8L19 8a2.8 2.8 0 0 0-4-4L4 15z"/></>,
-    download: <><path d="M12 3v12m-5-5 5 5 5-5"/><path d="M4 17v4h16v-4"/></>,
-    shield: <><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/></>,
-    bell: <><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></>,
-    logout: <><path d="M10 17l5-5-5-5M15 12H3"/><path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7"/></>,
-    check: <path d="m5 12 4 4L19 6"/>,
-    close: <><path d="m18 6-12 12M6 6l12 12"/></>,
-    chart: <><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-7"/></>,
-    dot: <circle cx="12" cy="12" r="8"/>
-  };
-  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name] || paths.dot}</svg>;
-}
-
-function Toggle({ checked, onChange }) {
-  return <button type="button" className={`toggle ${checked ? "is-on" : ""}`} onClick={() => onChange(!checked)} aria-pressed={checked}><span /></button>;
-}
-
-export default function ServerAdminDashboard() {
-  const [active, setActive] = useState("نظرة عامة");
-  const [templates, setTemplates] = useState(() => load("sad_templates", initialTemplates));
-  const [boards, setBoards] = useState(() => load("sad_boards", initialBoards));
-  const [people, setPeople] = useState(() => load("sad_people", initialPeople));
-  const [attendanceEnabled, setAttendanceEnabled] = useState(() => load("sad_attendance_enabled", true));
-  const [templateQuery, setTemplateQuery] = useState("");
-  const [category, setCategory] = useState("الكل");
-  const [modal, setModal] = useState(null);
-  const [toast, setToast] = useState("");
-  const [boardName, setBoardName] = useState("");
-  const [personQuery, setPersonQuery] = useState("");
-  const [settings, setSettings] = useState(() => load("sad_settings", { serverName: "السيرفر", language: "العربية", notifications: true, compact: false }));
-  const [draftTemplate, setDraftTemplate] = useState({ name: "", category: "المجتمع", description: "", icon: "🎮" });
-
-  useEffect(() => { localStorage.setItem("sad_templates", JSON.stringify(templates)); }, [templates]);
-  useEffect(() => { localStorage.setItem("sad_boards", JSON.stringify(boards)); }, [boards]);
-  useEffect(() => { localStorage.setItem("sad_people", JSON.stringify(people)); }, [people]);
-  useEffect(() => { localStorage.setItem("sad_attendance_enabled", JSON.stringify(attendanceEnabled)); }, [attendanceEnabled]);
-  useEffect(() => { localStorage.setItem("sad_settings", JSON.stringify(settings)); }, [settings]);
-
-  const filteredTemplates = useMemo(() => templates.filter(t => (category === "الكل" || t.category === category) && `${t.name} ${t.description}`.toLowerCase().includes(templateQuery.toLowerCase())), [templates, category, templateQuery]);
-  const notify = (msg) => { setToast(msg); window.setTimeout(() => setToast(""), 2600); };
-  const categories = ["الكل", "الألعاب", "المجتمع", "الأعمال", "التعليم", "الإبداع", "أخرى"];
-  const navTo = (label) => { setActive(label); setModal(null); };
-
-  function createTemplate(e) {
-    e.preventDefault();
-    if (!draftTemplate.name.trim()) return;
-    setTemplates(prev => [{ ...draftTemplate, id: Date.now(), channels: 0, roles: 0, members: 0, featured: false }, ...prev]);
-    setDraftTemplate({ name: "", category: "المجتمع", description: "", icon: "🎮" });
-    setModal(null); notify("تم إنشاء القالب");
-  }
-  function exportData() {
-    const blob = new Blob([JSON.stringify({ templates, boards, people, settings }, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob); const a = document.createElement("a");
-    a.href = url; a.download = "server-dashboard-backup.json"; a.click(); URL.revokeObjectURL(url); notify("تم تصدير نسخة احتياطية");
-  }
-  function addBoard(e) {
-    e.preventDefault(); if (!boardName.trim()) return;
-    setBoards(prev => [...prev, { id: Date.now(), name: boardName.trim(), shortcut: "Sign In / Sign Out", enabled: true, roles: ["Admin"], serviceRole: "Member" }]);
-    setBoardName(""); setModal(null); notify("تمت إضافة اللوحة");
-  }
-  function addPerson(e) {
-    e.preventDefault(); const name = personQuery.trim(); if (!name) return;
-    setPeople(prev => [...prev, { id: String(Date.now()), name, allowed: true }]); setPersonQuery(""); notify("تمت إضافة المستخدم إلى القائمة");
-  }
-
-  const navIcon = active === "نظرة عامة" ? "home" : active.includes("قالب") ? "layout-grid" : active.includes("حضور") ? "clock" : active.includes("رتب") ? "users" : active.includes("تذكرة") ? "ticket" : active.includes("إعداد") ? "settings" : "layers";
-
-  return <div className="sad" dir="rtl">
-    <aside className="sad-sidebar">
-      <div className="brand">
-        <div className="brand-mark"><Icon name="layers" size={22}/></div>
-        <div><strong>{settings.serverName || "السيرفر"}</strong><small>لوحة الإدارة</small></div>
-        <span className="online-dot" />
+  <div class="content">
+    <section class="view active" id="view-overview">
+      <div class="welcome-row"><div><div class="eyebrow">RKO CONTROL CENTER</div><h1>هلا بك في غرفة العمليات 👑</h1><p>تابع إعداداتك بسرعة. التغييرات تحفظ في هذا المتصفح فقط إلى أن تربط Backend.</p></div><div class="row-actions"><button class="ghost-btn" id="refresh-stats"><i class="fa-solid fa-rotate"></i> تحديث العرض</button><button class="primary-btn" data-goto="settings"><i class="fa-solid fa-sliders"></i> إعدادات اللوحة</button></div></div>
+      <div class="notice"><i class="fa-solid fa-circle-info"></i><div><strong>وضع المعاينة المحلي</strong><br>الواجهة تحفظ إعداداتها على جهازك. نشر لوحة Discord، المدفوعات، الحماية الفعلية، وجلب بيانات الأعضاء تتطلب API وخادماً خلفياً؛ لن تعرض الواجهة نجاحاً وهمياً لهذه العمليات.</div></div>
+      <div class="stats">
+        <div class="stat"><div class="stat-top"><span>السيرفر المحدد</span><span class="stat-icon"><i class="fa-brands fa-discord"></i></span></div><div class="stat-value" id="stat-server">01</div><div class="stat-note">سيرفر محفوظ في إعدادات الواجهة</div></div>
+        <div class="stat"><div class="stat-top"><span>الأنظمة المفعّلة</span><span class="stat-icon"><i class="fa-solid fa-toggle-on"></i></span></div><div class="stat-value" id="stat-enabled">—</div><div class="stat-note">حسب مفاتيح التفعيل الحالية</div></div>
+        <div class="stat"><div class="stat-top"><span>الإعدادات المحفوظة</span><span class="stat-icon"><i class="fa-solid fa-floppy-disk"></i></span></div><div class="stat-value" id="stat-saved">—</div><div class="stat-note">تخزين محلي في المتصفح</div></div>
+        <div class="stat"><div class="stat-top"><span>حالة الاتصال</span><span class="stat-icon"><i class="fa-solid fa-link-slash"></i></span></div><div class="stat-value" style="font-size:18px;color:var(--gold)">غير مربوط</div><div class="stat-note">لم يتم إعداد Backend بعد</div></div>
       </div>
-      <button className="server-select" onClick={() => notify("اربط اختيار السيرفر بواجهة الـ API الخاصة بك")}>
-        <span className="server-avatar">S</span><span>تغيير السيرفر</span><span className="chevron">⌄</span>
-      </button>
-      <div className="side-scroll">
-        <button className={`nav-item ${active === "نظرة عامة" ? "active" : ""}`} onClick={() => navTo("نظرة عامة")}><Icon name="home"/>نظرة عامة</button>
-        {navGroups.map(group => <div className="nav-group" key={group.title}><div className="nav-label">{group.title}</div>{group.items.map(([label, icon]) => <button key={label} className={`nav-item ${active === label ? "active" : ""}`} onClick={() => navTo(label)}><Icon name={icon}/><span>{label}</span>{["السحوبات", "إدارة الرتب", "الحضور"].includes(label) && <i className="new-tag">جديد</i>}</button>)}</div>)}
-        <button className={`nav-item ${active === "الإعدادات" ? "active" : ""}`} onClick={() => navTo("الإعدادات")}><Icon name="settings"/>الإعدادات</button>
+      <div class="grid-2">
+        <div class="panel"><div class="panel-head"><div><h2>نشاط الأنظمة</h2><p>مؤشر توضيحي محلي وليس إحصائيات Discord فعلية</p></div><span class="head-icon"><i class="fa-solid fa-chart-column"></i></span></div><div class="chart" aria-label="رسم توضيحي"><div class="bar-wrap"><div class="bar" style="height:35%"></div><span class="bar-label">س</span></div><div class="bar-wrap"><div class="bar" style="height:52%"></div><span class="bar-label">ح</span></div><div class="bar-wrap"><div class="bar" style="height:43%"></div><span class="bar-label">ن</span></div><div class="bar-wrap"><div class="bar" style="height:76%"></div><span class="bar-label">ث</span></div><div class="bar-wrap"><div class="bar" style="height:62%"></div><span class="bar-label">ر</span></div><div class="bar-wrap"><div class="bar" style="height:89%"></div><span class="bar-label">خ</span></div><div class="bar-wrap"><div class="bar" style="height:69%"></div><span class="bar-label">ج</span></div></div></div>
+        <div class="panel"><div class="panel-head"><div><h2>اختصارات سريعة</h2><p>انتقل مباشرة إلى إعداد النظام</p></div><span class="head-icon"><i class="fa-solid fa-bolt"></i></span></div><div class="activity-list">
+          <div class="activity"><div class="activity-icon"><i class="fa-solid fa-ticket"></i></div><div><strong>إعداد التذاكر</strong><small>الرسالة، بانر اللوحة، والميزات</small></div><button class="small-btn" data-goto="tickets">فتح</button></div>
+          <div class="activity"><div class="activity-icon"><i class="fa-solid fa-shield-halved"></i></div><div><strong>إعدادات الحماية</strong><small>خيارات مقترحة للربط بالخادم</small></div><button class="small-btn" data-goto="antinuke">فتح</button></div>
+          <div class="activity"><div class="activity-icon"><i class="fa-solid fa-robot"></i></div><div><strong>هوية البوت</strong><small>الاسم والوصف والصورة</small></div><button class="small-btn" data-goto="custombot">فتح</button></div>
+          <div class="activity"><div class="activity-icon"><i class="fa-solid fa-database"></i></div><div><strong>نسخة احتياطية</strong><small>تصدير أو استيراد إعداداتك</small></div><button class="small-btn" data-goto="settings">فتح</button></div>
+        </div></div>
       </div>
-      <div className="sidebar-bottom"><div className="avatar">A</div><div className="profile"><strong>مدير السيرفر</strong><small>صلاحيات كاملة</small></div><button className="icon-button" onClick={() => notify("أضف نظام تسجيل الدخول الخاص بك")} aria-label="تسجيل الخروج"><Icon name="logout"/></button></div>
-    </aside>
+    </section>
 
-    <main className="sad-main">
-      <header className="topbar">
-        <div className="breadcrumbs"><span>الإدارة</span><b>/</b><strong>{active}</strong></div>
-        <div className="top-actions"><span className="status-pill"><i/> النظام يعمل</span><button className="icon-button" onClick={() => notify("لا توجد تنبيهات جديدة")} aria-label="التنبيهات"><Icon name="bell"/></button><button className="user-chip" onClick={() => navTo("الإعدادات")}><span className="avatar small">A</span><span>المسؤول</span><span>⌄</span></button></div>
-      </header>
+    <section class="view" id="view-servers">
+      <div class="welcome-row"><div><div class="eyebrow">SERVER MANAGEMENT</div><h1>السيرفرات</h1><p>إدارة أسماء السيرفرات المحفوظة في الواجهة.</p></div><button class="primary-btn" id="add-server"><i class="fa-solid fa-plus"></i> إضافة سيرفر</button></div>
+      <div class="panel"><div class="toolbar"><div class="search"><i class="fa-solid fa-magnifying-glass"></i><input id="server-search" placeholder="ابحث عن سيرفر..."></div></div><div class="table-wrap"><table><thead><tr><th>السيرفر</th><th>المعرّف</th><th>الحالة</th><th>الإجراءات</th></tr></thead><tbody id="servers-table"></tbody></table></div><p class="small muted">هذه قائمة محلية. لا تمثل سيرفرات Discord المسترجعة من API.</p></div>
+    </section>
 
-      <div className="page-wrap">
-        {active === "نظرة عامة" && <>
-          <div className="welcome-row"><div><div className="eyebrow"><span className="eyebrow-line"/> مركز التحكم</div><h1>نظرة عامة <span className="cyan">.</span></h1><p>تابع حالة السيرفر وأدوات الإدارة من مكان واحد.</p></div><button className="primary-btn" onClick={() => navTo("القوالب")}><Icon name="layout-grid"/> استكشاف القوالب</button></div>
-          <section className="stats-grid">
-            <Stat title="إجمالي الأعضاء" value="2,481" change="+12.8%" icon="users" note="مقارنة بالأسبوع الماضي"/>
-            <Stat title="الأعضاء المتصلون" value="386" change="مباشر" icon="activity" note="يتطلب ربط بيانات السيرفر"/>
-            <Stat title="التذاكر المفتوحة" value="18" change="4 جديدة" icon="ticket" note="آخر 24 ساعة"/>
-            <Stat title="لوحات الحضور" value={boards.length} change={attendanceEnabled ? "مفعّلة" : "متوقفة"} icon="clock" note="إعدادات الحضور"/>
-          </section>
-          <div className="content-grid">
-            <section className="panel activity-panel"><div className="panel-heading"><div><h2>نشاط السيرفر</h2><p>نظرة توضيحية على نشاط الأسبوع</p></div><select aria-label="الفترة"><option>آخر 7 أيام</option><option>آخر 30 يومًا</option></select></div><div className="chart-area"><div className="chart-y"><span>500</span><span>400</span><span>300</span><span>200</span><span>100</span></div><div className="chart"><div className="chart-grid"><i/><i/><i/><i/><i/></div><svg viewBox="0 0 700 230" preserveAspectRatio="none" className="chart-svg"><defs><linearGradient id="chartFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#00c8e8" stopOpacity=".26"/><stop offset="100%" stopColor="#00c8e8" stopOpacity="0"/></linearGradient></defs><path d="M0 180 C35 172 48 145 90 154 S140 188 185 135 S245 120 280 140 S330 95 370 111 S420 155 465 93 S530 118 565 70 S620 95 650 47 S680 54 700 25 L700 230 L0 230Z" fill="url(#chartFill)"/><path d="M0 180 C35 172 48 145 90 154 S140 188 185 135 S245 120 280 140 S330 95 370 111 S420 155 465 93 S530 118 565 70 S620 95 650 47 S680 54 700 25" fill="none" stroke="#00c8e8" strokeWidth="3" vectorEffect="non-scaling-stroke"/></svg><div className="chart-x"><span>السبت</span><span>الأحد</span><span>الإثنين</span><span>الثلاثاء</span><span>الأربعاء</span><span>الخميس</span><span>الجمعة</span></div></div></div><div className="chart-foot"><span><i className="legend-dot"/> نشاط الأعضاء</span><span className="muted">بيانات تجريبية — اربط مصدر البيانات لعرض الأرقام الفعلية</span></div></section>
-            <section className="panel quick-panel"><div className="panel-heading"><div><h2>الوصول السريع</h2><p>الأدوات الأكثر استخدامًا</p></div><Icon name="grid"/></div><div className="quick-list">{[["القوالب","layout-grid","إدارة القوالب الجاهزة"],["الحضور","clock","السجلات واللوحات"],["إدارة الرتب","users","صلاحيات المستخدمين"],["الإعدادات","settings","تخصيص لوحة التحكم"]].map(([name, icon, desc]) => <button key={name} className="quick-link" onClick={() => navTo(name)}><span className="quick-icon"><Icon name={icon}/></span><span className="quick-text"><strong>{name}</strong><small>{desc}</small></span><b>←</b></button>)}</div></section>
-          </div>
-          <section className="panel recent-panel"><div className="panel-heading"><div><h2>آخر النشاطات</h2><p>ملخص تغييرات اللوحة محليًا</p></div><button className="text-btn" onClick={() => navTo("سجل النشاط")}>عرض السجل ←</button></div><div className="empty-activity"><span className="empty-icon"><Icon name="clipboard-list" size={23}/></span><strong>كل شيء هادئ حتى الآن</strong><p>سيظهر هنا سجل الأحداث عند ربط العمليات بالخادم.</p></div></section>
-        </>}
+    <section class="view" id="view-tickets">
+      <div class="welcome-row"><div><div class="eyebrow">TICKETS & ROOMS</div><h1>مركز التذاكر والرومات</h1><p>عدّل خيارات لوحة التذاكر واحفظها محلياً.</p></div><span class="tag gold"><i class="fa-solid fa-crown"></i> VIP UI</span></div>
+      <div class="tab-row" id="ticket-tabs"><button class="tab-btn active" data-tab="support">تذاكر الدعم</button><button class="tab-btn" data-tab="vip">رومات VIP</button><button class="tab-btn" data-tab="buttons">الأزرار التفاعلية</button></div>
+      <div class="panel">
+        <div class="panel-head"><div><h2 id="ticket-tab-title">إعدادات تذاكر الدعم</h2><p>هذه الإعدادات لن تُنشر في Discord إلا بعد ربط API.</p></div><span class="head-icon"><i class="fa-solid fa-ticket"></i></span></div>
+        <div class="check-row"><div><strong>تفعيل نظام التذاكر</strong><small>حفظ تفضيل تشغيل الميزة.</small></div><label class="switch"><input type="checkbox" data-setting="ticketsEnabled" checked><span></span></label></div>
+        <div class="check-row"><div><strong>السماح بإغلاق التذكرة</strong><small>إظهار خيار الإغلاق في تصميم اللوحة.</small></div><label class="switch"><input type="checkbox" data-setting="ticketClose" checked><span></span></label></div>
+        <div class="check-row"><div><strong>طلب تقييم بعد الإغلاق</strong><small>تفضيل واجهة فقط؛ يحتاج معالجة في البوت.</small></div><label class="switch"><input type="checkbox" data-setting="ticketRating" checked><span></span></label></div>
+        <div class="form-group" style="margin-top:18px"><label for="ticket-message">رسالة لوحة التذاكر</label><textarea id="ticket-message" class="field field-area" data-setting="ticketMessage">أهلاً بك في مركز الدعم الفني لـ RKO. اختر نوع التذكرة المناسبة وسيقوم الطاقم بمساعدتك.</textarea></div>
+        <div class="form-grid"><div class="form-group"><label for="ticket-banner">رابط البانر (اختياري)</label><input id="ticket-banner" class="field" type="url" placeholder="https://example.com/banner.png" data-setting="ticketBanner"><div class="hint">يُتحقق من صيغة الرابط عند الحفظ.</div></div><div class="form-group"><label for="ticket-category">اسم فئة التذاكر</label><input id="ticket-category" class="field" data-setting="ticketCategory" value="الدعم الفني"></div></div>
+        <div class="footer-actions"><span class="small muted">آخر تعديل: <span id="ticket-updated">لم يُحفظ بعد</span></span><button class="primary-btn" id="save-tickets"><i class="fa-solid fa-floppy-disk"></i> حفظ الإعدادات</button></div>
+      </div>
+      <div class="grid-3">
+        <div class="feature-card"><div class="feature-top"><h3>تذاكر الدعم الفني</h3><span class="tag cyan">إعداد</span></div><p>نموذج لفتح تذاكر خاصة، مع إمكانية تحديد رتبة الدعم في الخادم لاحقاً.</p></div>
+        <div class="feature-card"><div class="feature-top"><h3>رومات VIP المؤقتة</h3><span class="tag gold">إعداد</span></div><p>تفضيلات للرومات الصوتية المؤقتة؛ الإنشاء والحذف الفعلي يحتاج صلاحيات البوت.</p></div>
+        <div class="feature-card"><div class="feature-top"><h3>أزرار التفاعل</h3><span class="tag">UI</span></div><p>حفظ خيارات تصميم الأزرار محلياً دون ادعاء نشرها إلى Discord.</p></div>
+      </div>
+    </section>
 
-        {active === "القوالب" && <><div className="welcome-row"><div><div className="eyebrow"><span className="eyebrow-line"/> مكتبة القوالب</div><h1>القوالب <span className="cyan">.</span></h1><p>اكتشف القوالب وأنشئ نسخك الخاصة لإدارة مجتمعك.</p></div><button className="primary-btn" onClick={() => setModal("template")}><Icon name="plus"/> قالب جديد</button></div><div className="toolbar"><div className="search-box"><Icon name="search"/><input value={templateQuery} onChange={e => setTemplateQuery(e.target.value)} placeholder="ابحث عن القوالب..."/></div><div className="filters">{categories.map(c => <button key={c} onClick={() => setCategory(c)} className={category === c ? "filter active" : "filter"}>{c}</button>)}</div><span className="result-count">{filteredTemplates.length} قوالب</span></div><div className="template-grid">{filteredTemplates.map(t => <article className="template-card" key={t.id}><div className="template-top"><span className="template-emoji">{t.icon}</span>{t.featured && <span className="featured"><Icon name="crown" size={13}/> مميز</span>}<button className="dots" onClick={() => { if (window.confirm(`حذف القالب «${t.name}»؟`)) { setTemplates(prev => prev.filter(x => x.id !== t.id)); notify("تم حذف القالب"); } }} aria-label="حذف القالب"><Icon name="trash" size={16}/
+    <section class="view" id="view-antinuke">
+      <div class="welcome-row"><div><div class="eyebrow">SECURITY CENTER</div><h1>الحماية Anti-Nuke</h1><p>إعدادات مقترحة فقط — لا تفعّل الحماية الحقيقية من المتصفح.</p></div><span class="tag red"><i class="fa-solid fa-shield-halved"></i> يحتاج Backend</span></div>
+      <div class="notice"><i class="fa-solid fa-triangle-exclamation"></i><div><strong>تنبيه أمني</strong><br>تفعيل الحماية الفعلية يتطلب مراقبة أحداث Discord، وصلاحيات أقل ما يمكن، وقواعد rate-limit وتسجيل تدقيق داخل البوت. المفاتيح هنا تحفظ تفضيلاتك فقط.</div></div>
+      <div class="panel"><div class="panel-head"><div><h2>قواعد الحماية المقترحة</h2><p>يمكن تعديلها ثم حفظها كإعدادات محلية.</p></div><span class="head-icon"><i class="fa-solid fa-shield"></i></span></div>
+        <div class="check-row"><div><strong>مراقبة حذف القنوات</strong><small>تنبيه عند كثرة عمليات الحذف.</small></div><label class="switch"><input type="checkbox" data-setting="protectChannels" checked><span></span></label></div>
+        <div class="check-row"><div><strong>مراقبة تعديل الرتب والصلاحيات</strong><small>تسجيل تغييرات الصلاحيات عالية الخطورة.</small></div><label class="switch"><input type="checkbox" data-setting="protectRoles" checked><span></span></label></div>
+        <div class="check-row"><div><strong>مراقبة Webhooks</strong><small>رصد إنشاء Webhooks غير متوقعة.</small></div><label class="switch"><input type="checkbox" data-setting="protectWebhooks" checked><span></span></label></div>
+        <div class="check-row"><div><strong>تفعيل سجل التدقيق</strong><small>يتطلب تخزيناً خلفياً وصلاحية قراءة Audit Log.</small></div><label class="switch"><input type="checkbox" data-setting="auditLog" checked><span></span></label></div>
+        <div class="form-group" style="margin-top:16px"><label for="security-threshold">حد التنبيهات خلال دقيقة</label><input id="security-threshold" class="field" type="number" min="1" max="100" value="5" data-setting="securityThreshold"></div>
+        <button class="primary-btn" id="save-security"><i class="fa-solid fa-floppy-disk"></i> حفظ تفضيلات الحماية</button>
+      </div>
+    </section>
+
+    <section class="view" id="view-attendance">
+      <div class="welcome-row"><div><div class="eyebrow">STAFF ATTENDANCE</div><h1>الحضور والإجازات</h1><p>سجل تجريبي محلي قابل للتصدير، وليس سجلاً حقيقياً من Discord.</p></div><button class="primary-btn" id="add-attendance"><i class="fa-solid fa-plus"></i> إضافة سجل</button></div>
+      <div class="panel"><div class="toolbar"><div class="search"><i class="fa-solid fa-magnifying-glass"></i><input id="attendance-search" placeholder="ابحث باسم الموظف..."></div><button class="ghost-btn" id="export-attendance"><i class="fa-solid fa-file-csv"></i> تصدير CSV</button></div><div class="table-wrap"><table><thead><tr><th>الموظف</th><th>الحالة</th><th>التاريخ</th><th>ملاحظات</th><th>الإجراء</th></tr></thead><tbody id="attendance-table"></tbody></table></div></div>
+    </section>
+
+    <section class="view" id="view-welcome">
+      <div class="welcome-row"><div><div class="eyebrow">COMMUNITY</div><h1>الترحيب والرسائل</h1><p>خصص نصوص الترحيب التي سيستخدمها البوت بعد ربطه.</p></div></div>
+      <div class="panel"><div class="panel-head"><div><h2>رسائل الأعضاء</h2><p>استخدم {user} لاسم العضو و{server} لاسم السيرفر.</p></div><span class="head-icon"><i class="fa-solid fa-door-open"></i></span></div>
+        <div class="check-row"><div><strong>تفعيل رسالة الترحيب</strong><small>تفضيل محفوظ محلياً.</small></div><label class="switch"><input type="checkbox" data-setting="welcomeEnabled" checked><span></span></label></div>
+        <div class="form-group" style="margin-top:15px"><label for="welcome-message">رسالة الترحيب العامة</label><textarea id="welcome-message" class="field field-area" data-setting="welcomeMessage">أهلاً بك يا {user} في سيرفر {server}، نتمنى لك وقتاً ممتعاً!</textarea></div>
+        <div class="form-group"><label for="dm-message">رسالة الخاص (DM)</label><textarea id="dm-message" class="field field-area" data-setting="dmMessage">مرحباً {user}! شكراً لانضمامك إلى {server}. اقرأ القوانين عندك وقت.</textarea></div>
+        <div class="footer-actions"><span class="small muted">معاينة: <span id="welcome-preview"></span></span><button class="primary-btn" id="save-welcome"><i class="fa-solid fa-floppy-disk"></i> حفظ الرسائل</button></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-templates">
+      <div class="welcome-row"><div><div class="eyebrow">TEMPLATE STORE</div><h1>متجر القوالب</h1><p>قوالب توضيحية يمكن تخصيصها — لا يوجد شراء أو دفع فعلي داخل هذه النسخة.</p></div></div>
+      <div class="grid-3">
+        <div class="feature-card"><div class="feature-top"><h3><i class="fa-solid fa-gamepad" style="color:var(--cyan)"></i> مجتمع ألعاب</h3><span class="tag cyan">مجاني</span></div><p>قنوات عامة، أخبار، اقتراحات، دعم فني، ورومات صوتية.</p><button class="ghost-btn template-apply" data-template="gaming">استخدام القالب</button></div>
+        <div class="feature-card"><div class="feature-top"><h3><i class="fa-solid fa-gem" style="color:var(--gold)"></i> مجتمع VIP</h3><span class="tag gold">مميز</span></div><p>تصنيفات للأعضاء المميزين، دعم خاص، وقنوات إعلانات.</p><button class="ghost-btn template-apply" data-template="vip">استخدام القالب</button></div>
+        <div class="feature-card"><div class="feature-top"><h3><i class="fa-solid fa-building" style="color:var(--green)"></i> فريق إداري</h3><span class="tag">إداري</span></div><p>قنوات إدارية، تقارير، إجازات، اجتماعات، وسجل متابعة.</p><button class="ghost-btn template-apply" data-template="staff">استخدام القالب</button></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-custombot">
+      <div class="welcome-row"><div><div class="eyebrow">BOT IDENTITY</div><h1>تخصيص البوت</h1><p>تعديل بيانات المعاينة. تحديث اسم وصورة البوت الحقيقي يحتاج Bot API آمن من الخادم.</p></div></div>
+      <div class="panel"><div class="panel-head"><div><h2>هوية البوت</h2><p>الحدود هنا تواكب حقول العرض، ولا ترفع البيانات إلى Discord.</p></div><span class="head-icon"><i class="fa-solid fa-robot"></i></span></div>
+        <div class="check-row"><div><strong>إظهار البوت المخصص في المعاينة</strong><small>تشغيل/إيقاف بطاقة الهوية.</small></div><label class="switch"><input type="checkbox" data-setting="customBotEnabled" checked><span></span></label></div>
+        <div class="form-grid" style="margin-top:16px"><div class="form-group"><label for="bot-name">اسم العرض (32 حرفاً كحد أقصى)</label><input id="bot-name" class="field" maxlength="32" data-setting="botName" value="RKO Supreme Bot"><div class="hint"><span id="bot-name-count">0</span>/32</div></div><div class="form-group"><label for="bot-image">الصورة الشخصية</label><input id="bot-image" type="file" class="field" accept="image/png,image/jpeg,image/gif,image/webp"><div class="hint">PNG/JPG/GIF/WebP حتى 8MB. المعاينة محلية فقط.</div></div></div>
+        <div class="form-group"><label for="bot-description">نبذة عن البوت (190 حرفاً كحد أقصى)</label><textarea id="bot-description" maxlength="190" class="field field-area" data-setting="botDescription">بوت الإدارة والحماية والتذاكر الحصري لـ RKO.</textarea><div class="hint"><span id="bot-description-count">0</span>/190</div></div>
+        <div class="feature-card" id="bot-preview"><div class="feature-top"><h3><i class="fa-solid fa-robot" style="color:var(--cyan)"></i> <span id="bot-preview-name">RKO Supreme Bot</span></h3><span class="tag cyan">معاينة</span></div><p id="bot-preview-description">بوت الإدارة والحماية والتذاكر الحصري لـ RKO.</p><img id="bot-preview-image" alt="معاينة صورة البوت" style="display:none;width:72px;height:72px;border-radius:18px;object-fit:cover;border:1px solid var(--line)"></div>
+        <div class="footer-actions"><span class="small muted">لا يتم رفع الصورة إلى أي خادم.</span><button class="primary-btn" id="save-bot"><i class="fa-solid fa-floppy-disk"></i> حفظ الهوية محلياً</button></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-users">
+      <div class="welcome-row"><div><div class="eyebrow">USER MANAGEMENT</div><h1>المستخدمون</h1><p>قائمة تجريبية محلية. ربط العضويات والصلاحيات يحتاج API.</p></div><button class="primary-btn" id="add-user"><i class="fa-solid fa-user-plus"></i> إضافة مستخدم تجريبي</button></div>
+      <div class="panel"><div class="toolbar"><div class="search"><i class="fa-solid fa-magnifying-glass"></i><input id="user-search" placeholder="ابحث بالاسم أو المعرّف..."></div></div><div class="table-wrap"><table><thead><tr><th>المستخدم</th><th>المعرّف</th><th>الدور</th><th>الحالة</th><th>الإجراءات</th></tr></thead><tbody id="users-table"></tbody></table></div></div>
+    </section>
+
+    <section class="view" id="view-premium">
+      <div class="welcome-row"><div><div class="eyebrow">PREMIUM</div><h1>البريميوم والاشتراكات</h1><p>هذه صفحة عرض فقط. لا يوجد دفع حقيقي أو تفعيل اشتراك داخل HTML.</p></div><span class="tag gold"><i class="fa-solid fa-crown"></i> VIP</span></div>
+      <div class="notice"><i class="fa-solid fa-lock"></i><div><strong>الدفع غير مفعّل</strong><br>لا تستخدم زرّاً يعلن نجاح الدفع دون مزود دفع يتحقق من العملية عبر الخادم وWebhook. أضف مزودك لاحقاً مثل Stripe أو بوابة محلية متاحة لحسابك.</div></div>
+      <div class="grid-3"><div class="feature-card"><div class="feature-top"><h3>Basic</h3><span class="tag">أساسي</span></div><div style="font-size:24px;font-weight:900;margin:12px 0">مجاني</div><p>إعدادات أساسية وواجهة إدارة محلية.</p></div><div class="feature-card"><div class="feature-top"><h3>VIP</h3><span class="tag gold">مميز</span></div><div style="font-size:24px;font-weight:900;margin:12px 0">تحدد لاحقاً</div><p>حدّد السعر والميزات بعد تجهيز المنتج والدفع والتحقق من الاشتراك في الخادم.</p><button class="ghost-btn" id="premium-config">إعداد تفاصيل الباقة</button></div><div class="feature-card"><div class="feature-top"><h3>Enterprise</h3><span class="tag cyan">متقدم</span></div><div style="font-size:24px;font-weight:900;margin:12px 0">حسب الطلب</div><p>للسيرفرات الكبيرة مع سجلات وتكاملات مخصصة.</p></div></div>
+    </section>
+
+    <section class="view" id="view-profile">
+      <div class="welcome-row"><div><div class="eyebrow">OWNER PROFILE</div><h1>الملف الشخصي</h1><p>تخصيص اسم العرض الذي يظهر في هذه اللوحة.</p></div></div>
+      <div class="panel"><div class="panel-head"><div><h2>بيانات المالك</h2><p>تحفظ محلياً في هذا المتصفح.</p></div><span class="head-icon"><i class="fa-solid fa-user-gear"></i></span></div><div class="form-grid"><div class="form-group"><label for="owner-name">اسم العرض</label><input id="owner-name" class="field" maxlength="60" data-setting="ownerName" value="راكان (المالك)"></div><div class="form-group"><label for="owner-title">الوصف</label><input id="owner-title" class="field" maxlength="100" data-setting="ownerTitle" value="مالك لوحة RKO"></div></div><button class="primary-btn" id="save-profile"><i class="fa-solid fa-floppy-disk"></i> حفظ الملف الشخصي</button></div>
+    </section>
+
+    <section class="view" id="view-settings">
+      <div class="welcome-row"><div><div class="eyebrow">PREFERENCES & BACKUP</div><h1>الإعدادات والنسخ الاحتياطي</h1><p>إدارة المظهر والبيانات المحفوظة في المتصفح.</p></div></div>
+      <div class="panel"><div class="panel-head"><div><h2>تفضيلات الواجهة</h2><p>تطبّق مباشرة على هذه الصفحة.</p></div><span class="head-icon"><i class="fa-solid fa-sliders"></i></span></div>
+        <div class="check-row"><div><strong>الوضع النهاري</strong><small>تبديل ألوان الواجهة إلى المظهر الفاتح.</small></div><label class="switch"><input type="checkbox" id="light-mode-setting"><span></span></label></div>
+        <div class="check-row"><div><strong>تأكيد قبل حذف العناصر</strong><small>إظهار نافذة تأكيد عند حذف سجل محلي.</small></div><label class="switch"><input type="checkbox" data-setting="confirmDelete" checked><span></span></label></div>
+        <div class="footer-actions"><button class="primary-btn" id="save-settings"><i class="fa-solid fa-floppy-disk"></i> حفظ التفضيلات</button><button class="danger-btn" id="reset-settings"><i class="fa-solid fa-rotate-left"></i> استعادة الافتراضي</button></div>
+      </div>
+      <div class="panel"><div class="panel-head"><div><h2>النسخ الاحتياطي</h2><p>صدّر إعدادات اللوحة أو استورد ملف JSON سابقاً.</p></div><span class="head-icon"><i class="fa-solid fa-database"></i></span></div><div class="row-actions"><button class="primary-btn" id="export-data"><i class="fa-solid fa-download"></i> تصدير JSON</button><button class="ghost-btn" id="import-data-btn"><i class="fa-solid fa-upload"></i> استيراد JSON</button><input id="import-data" type="file" accept="application/json,.json" hidden></div><p class="small muted" style="margin-top:13px">لا يحتوي ملف النسخة الاحتياطية على أسرار أو رموز بوت. لا تضع Token في الواجهة الأمامية.</p></div>
+    </section>
+  </div>
+</main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><i class="fa-solid fa-circle-check"></i><span id="toast-text"></span></div>
+<div class="modal-backdrop" id="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal"><div class="modal-head"><h2 id="modal-title">إضافة عنصر</h2><button class="close-btn" id="modal-close" aria-label="إغلاق"><i class="fa-solid fa-xmark"></i></button></div><div id="modal-body"></div><div class="modal-foot"><button class="primary-btn" id="modal-submit">حفظ</button><button class="ghost-btn" id="modal-cancel">إلغاء</button></div></div></div>
+
+<script>
+(() => {
+'use strict';
+const STORAGE_KEY = 'rko-dashboard-v2';
+const defaultState = {
+  settings: {
+    ticketsEnabled:true,ticketClose:true,ticketRating:true,
+    ticketMessage:'أهلاً بك في مركز الدعم الفني لـ RKO. اختر نوع التذكرة المناسبة وسيقوم الطاقم بمساعدتك.',
+    ticketBanner:'',ticketCategory:'الدعم الفني',
+    protectChannels:true,protectRoles:true,protectWebhooks:true,auditLog:true,securityThreshold:5,
+    welcomeEnabled:true,welcomeMessage:'أهلاً بك يا {user} في سيرفر {server}، نتمنى لك وقتاً ممتعاً!',
+    dmMessage:'مرحباً {user}! شكراً لانضمامك إلى {server}. اقرأ القوانين عندك وقت.',
+    customBotEnabled:true,botName:'RKO Supreme Bot',botDescription:'بوت الإدارة والحماية والتذاكر الحصري لـ RKO.',
+    ownerName:'راكان (المالك)',ownerTitle:'مالك لوحة RKO',confirmDelete:true,lightMode:false
+  },
+  servers:[{id:'local-977',name:'Addons 977',status:'محلي'}],
+  users:[
+    {id:'123456789012345678',name:'RKO Owner',role:'مالك',status:'نشط'},
+    {id:'234567890123456789',name:'Moderator Demo',role:'مشرف',status:'نشط'},
+    {id:'345678901234567890',name:'Support Demo',role:'دعم فني',status:'غير متصل'}
+  ],
+  attendance:[
+    {id:1,name:'Moderator Demo',status:'حاضر',date:new Date().toISOString().slice(0,10),note:'سجل تجريبي'},
+    {id:2,name:'Support Demo',status:'إجازة',date:new Date().toISOString().slice(0,10),note:'سجل تجريبي'}
+  ],
+  lastSaved:null
+};
+let state = loadState();
+let currentView='overview', modalAction=null, toastTimer=null, ticketTab='support', botImageData='';
+const $ = (sel,root=document)=>root.querySelector(sel);
+const $$ = (sel,root=document)=>Array.from(root.querySelectorAll(sel));
+function clone(v){return JSON.parse(JSON.stringify(v))}
+function loadState(){
+  try { const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null'); if(saved&&saved.settings&&Array.isArray(saved.servers)) return {...clone(defaultState),...saved,settings:{...clone(defaultState.settings),...(saved.settings||{})}}; }
+  catch(e){ console.warn('تعذر تحميل البيانات المحفوظة',e); }
+  return clone(defaultState);
+}
+function persist(silent=false){
+  state.lastSaved=new Date().toISOString();
+  try { localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); updateStats(); if(!silent) toast('تم حفظ الإعدادات على هذا المتصفح.'); return true; }
+  catch(e){ toast('تعذر الحفظ. قد تكون مساحة التخزين ممتلئة.',true); return false; }
+}
+function toast(message,error=false){
+  const el=$('#toast'); $('#toast-text').textContent=message; el.classList.toggle('error',error); el.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),3200);
+}
+function updateStats(){
+  $('#stat-server').textContent=String(state.servers.length).padStart(2,'0');
+  const keys=['ticketsEnabled','ticketClose','ticketRating','protectChannels','protectRoles','protectWebhooks','auditLog','welcomeEnabled','customBotEnabled'];
+  $('#stat-enabled').textContent=keys.filter(k=>state.settings[k]).length;
+  $('#stat-saved').textContent=Object.keys(state.settings).length;
+  $('#server-name-chip').textContent=state.servers[0]?.name||'لا يوجد سيرفر';
+  $('#owner-name-top').textContent=state.settings.ownerName||'المالك';
+}
+const viewInfo={
+ overview:['نظرة عامة','ملخص سريع لحالة لوحة الإدارة'],servers:['السيرفرات','إدارة السيرفرات المحفوظة محلياً'],
+ tickets:['التذاكر والرومات','تخصيص إعدادات التذاكر'],antinuke:['الحماية Anti-Nuke','تفضيلات الحماية المقترحة'],
+ attendance:['الحضور والإجازات','سجلات محلية تجريبية'],welcome:['الترحيب والرسائل','تخصيص رسائل الأعضاء'],
+ templates:['متجر القوالب','قوالب جاهزة للمعاينة'],custombot:['تخصيص البوت','هوية البوت في المعاينة'],
+ users:['المستخدمون','قائمة مستخدمين تجريبية'],premium:['البريميوم','معلومات الباقات والدفع'],
+ profile:['الملف الشخصي','بيانات المالك'],settings:['الإعدادات والنسخ الاحتياطي','تفضيلات ونسخ بيانات اللوحة']
+};
+function go(view){
+  if(!viewInfo[view]) return;
+  currentView=view;
+  $$('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+view));
+  $$('#nav button[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
+  $('#page-title').textContent=viewInfo[view][0]; $('#page-subtitle').textContent=viewInfo[view][1];
+  $('#sidebar').classList.remove('open');
+  if(view==='servers') renderServers();
+  if(view==='users') renderUsers();
+  if(view==='attendance') renderAttendance();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function getSetting(key){return state.settings[key]}
+function setSetting(key,value){state.settings[key]=value}
+function bindSettings(){
+  $$('[data-setting]').forEach(el=>{
+    const key=el.dataset.setting;
+    if(!(key in state.settings)) return;
+    if(el.type==='checkbox') el.checked=Boolean(state.settings[key]);
+    else el.value=state.settings[key]??'';
+    el.addEventListener('change',()=>{
+      let value=el.type==='checkbox'?el.checked:el.value;
+      if(el.type==='number') value=Number(value);
+      setSetting(key,value);
+      if(key==='welcomeMessage') updateWelcomePreview();
+      if(key==='botName'||key==='botDescription') updateBotPreview();
+      updateStats();
+    });
+    if(el.tagName==='TEXTAREA'||el.tagName==='INPUT') el.addEventListener('input',()=>{
+      if(key==='welcomeMessage') updateWelcomePreview();
+      if(key==='botName'||key==='botDescription') updateBotPreview();
+    });
+  });
+  $('#light-mode-setting').checked=Boolean(state.settings.lightMode);
+}
+function hydrateInputs(){
+  $$('[data-setting]').forEach(el=>{const k=el.dataset.setting;if(!(k in state.settings))return;if(el.type==='checkbox')el.checked=!!state.settings[k];else el.value=state.settings[k]??'';});
+  $('#light-mode-setting').checked=!!state.settings.lightMode;
+  updateBotPreview();updateWelcomePreview();updateStats();
+}
+function saveInputs(){
+  $$('[data-setting]').forEach(el=>{
+    const k=el.dataset.setting;
+    let value=el.type==='checkbox'?el.checked:el.value;
+    if(el.type==='number') value=Number(value);
+    state.settings[k]=value;
+  });
+}
+function updateWelcomePreview(){
+  const msg=$('#welcome-message')?.value||state.settings.welcomeMessage||'';
+  $('#welcome-preview').textContent=msg.replaceAll('{user}','RKO_User').replaceAll('{server}',state.servers[0]?.name||'اسم السيرفر');
+}
+function updateBotPreview(){
+  const name=$('#bot-name')?.value||state.settings.botName||'RKO Bot';
+  const desc=$('#bot-description')?.value||state.settings.botDescription||'';
+  $('#bot-name-count').textContent=name.length;$('#bot-description-count').textContent=desc.length;
+  $('#bot-preview-name').textContent=name;$('#bot-preview-description').textContent=desc;
+}
+function safe(text){return String(text??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderServers(){
+ const q=($('#server-search').value||'').toLowerCase();
+ const list=state.servers.filter(s=>(s.name+' '+s.id).toLowerCase().includes(q));
+ $('#servers-table').innerHTML=list.length?list.map(s=>`<tr><td><strong>${safe(s.name)}</strong></td><td class="muted">${safe(s.id)}</td><td><span class="tag">${safe(s.status||'محلي')}</span></td><td><div class="actions"><button class="small-btn" data-edit-server="${safe(s.id)}">تعديل</button><button class="small-btn delete" data-delete-server="${safe(s.id)}">حذف</button></div></td></tr>`).join(''):'<tr><td colspan="4" class="empty">لا توجد نتائج</td></tr>';
+}
+function renderUsers(){
+ const q=($('#user-search').value||'').toLowerCase();
+ const list=state.users.filter(u=>(u.name+' '+u.id+' '+u.role).toLowerCase().includes(q));
+ $('#users-table').innerHTML=list.length?list.map(u=>`<tr><td><strong>${safe(u.name)}</strong></td><td class="muted">${safe(u.id)}</td><td>${safe(u.role)}</td><td><span class="tag ${u.status==='نشط'?'':'gold'}">${safe(u.status)}</span></td><td><div class="actions"><button class="small-btn" data-toggle-user="${safe(u.id)}">تبديل الحالة</button><button class="small-btn delete" data-delete-user="${safe(u.id)}">حذف</button></div></td></tr>`).join(''):'<tr><td colspan="5" class="empty">لا توجد نتائج</td></tr>';
+}
+function renderAttendance(){
+ const q=($('#attendance-search').value||'').toLowerCase();
+ const list=state.attendance.filter(a=>(a.name+' '+a.status+' '+a.note).toLowerCase().includes(q));
+ $('#attendance-table').innerHTML=list.length?list.map(a=>`<tr><td><strong>${safe(a.name)}</strong></td><td><span class="tag ${a.status==='حاضر'?'':'gold'}">${safe(a.status)}</span></td><td>${safe(a.date)}</td><td>${safe(a.note)}</td><td><button class="small-btn delete" data-delete-attendance="${a.id}">حذف</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty">لا توجد سجلات</td></tr>';
+}
+function openModal(title,body,action){
+ $('#modal-title').textContent=title;$('#modal-body').innerHTML=body;modalAction=action;$('#modal-backdrop').classList.add('open');
+ setTimeout(()=>$('#modal-body input')?.focus(),50);
+}
+function closeModal(){ $('#modal-backdrop').classList.remove('open');modalAction=null; }
+function askDelete(label,callback){
+ if(state.settings.confirmDelete&&!confirm(`متأكد من حذف ${label}؟`))return;
+ callback();persist(true);toast('تم حذف العنصر من البيانات المحلية.');
+}
+function exportJSON(){
+ const blob=new Blob([JSON.stringify({...state,exportedAt:new Date().toISOString(),format:'rko-dashboard-backup-v2'},null,2)],{type:'application/json'});
+ downloadBlob(blob,'rko-dashboard-backup.json');
+}
+function downloadBlob(blob,name){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function exportCSV(){
+ const rows=[['الموظف','الحالة','التاريخ','ملاحظات'],...state.attendance.map(a=>[a.name,a.status,a.date,a.note])];
+ const csv='\ufeff'+rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+ downloadBlob(new Blob([csv],{type:'text/csv;charset=utf-8'}),'rko-attendance.csv');
+}
+function setTheme(light){state.settings.lightMode=!!light;document.body.classList.toggle('light-mode',!!light);$('#theme-toggle').innerHTML=light?'<i class="fa-solid fa-sun"></i>':'<i class="fa-solid fa-moon"></i>';$('#light-mode-setting').checked=!!light;persist(true)}
+function resetState(){
+ if(!confirm('سيتم استعادة الإعدادات والبيانات التجريبية الافتراضية. هل تريد المتابعة؟'))return;
+ state=clone(defaultState);localStorage.removeItem(STORAGE_KEY);hydrateInputs();bindSettings();renderServers();renderUsers();renderAttendance();setTheme(false);persist(true);go('overview');toast('تمت استعادة الإعدادات الافتراضية.');
+}
+$('#nav').addEventListener('click',e=>{const b=e.target.closest('button[data-view]');if(b)go(b.dataset.view)});
+document.addEventListener('click',e=>{
+ const goto=e.target.closest('[data-goto]');if(goto){go(goto.dataset.goto);return}
+ const edit=e.target.closest('[data-edit-server]');if(edit){const id=edit.dataset.editServer,s=state.servers.find(x=>x.id===id);if(!s)return;openModal('تعديل اسم السيرفر',`<div class="form-group"><label>اسم السيرفر</label><input id="modal-server-name" class="field" maxlength="80" value="${safe(s.name)}"></div>`,()=>{const n=$('#modal-server-name').value.trim();if(!n)throw Error('اكتب اسم السيرفر أولاً');s.name=n;renderServers();updateStats();persist();});return}
+ const delS=e.target.closest('[data-delete-server]');if(delS){askDelete('السيرفر',()=>{state.servers=state.servers.filter(s=>s.id!==delS.dataset.deleteServer);renderServers();updateStats()});return}
+ const delU=e.target.closest('[data-delete-user]');if(delU){askDelete('المستخدم',()=>{state.users=state.users.filter(u=>u.id!==delU.dataset.deleteUser);renderUsers()});return}
+ const toggleU=e.target.closest('[data-toggle-user]');if(toggleU){const u=state.users.find(x=>x.id===toggleU.dataset.toggleUser);if(u){u.status=u.status==='نشط'?'غير متصل':'نشط';renderUsers();persist()}return}
+ const delA=e.target.closest('[data-delete-attendance]');if(delA){askDelete('السجل',()=>{state.attendance=state.attendance.filter(a=>a.id!==Number(delA.dataset.deleteAttendance));renderAttendance()});return}
+ const tpl=e.target.closest('[data-template]');if(tpl){const map={gaming:'مجتمع ألعاب',vip:'مجتمع VIP',staff:'فريق إداري'};state.settings.ticketCategory=map[tpl.dataset.template];persist();toast(`تم اختيار قالب «${map[tpl.dataset.template]}» كتصنيف افتراضي. لم يتم إنشاء قنوات في Discord.`);return}
+});
+$('#mobile-menu').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));
+document.addEventListener('click',e=>{if(window.innerWidth<=820&&!e.target.closest('#sidebar')&&!e.target.closest('#mobile-menu'))$('#sidebar').classList.remove('open')});
+$('#theme-toggle').addEventListener('click',()=>{setTheme(!document.body.classList.contains('light-mode'));toast('تم تبديل المظهر.')});
+$('#light-mode-setting').addEventListener('change',e=>setTheme(e.target.checked));
+$('#export-top').addEventListener('click',exportJSON);$('#export-data').addEventListener('click',exportJSON);
+$('#import-data-btn').addEventListener('click',()=>$('#import-data').click());
+$('#import-data').addEventListener('change',async e=>{
+ const file=e.target.files[0];if(!file)return;
+ try{if(file.size>2*1024*1024)throw Error('حجم الملف أكبر من 2MB');const parsed=JSON.parse(await file.text());if(!parsed||typeof parsed!=='object'||!parsed.settings||!Array.isArray(parsed.servers))throw Error('صيغة النسخة الاحتياطية غير صحيحة');
+ if(!confirm('سيتم استبدال الإعدادات المحلية الحالية بمحتويات الملف. متابعة؟'))return;
+ state={...clone(defaultState),...parsed,settings:{...clone(defaultState.settings),...parsed.settings},users:Array.isArray(parsed.users)?parsed.users:[],attendance:Array.isArray(parsed.attendance)?parsed.attendance:[]};
+ hydrateInputs();bindSettings();renderServers();renderUsers();renderAttendance();setTheme(!!state.settings.lightMode);persist(true);toast('تم استيراد النسخة الاحتياطية. راجع الإعدادات قبل الاستخدام.');
+ }catch(err){toast(err.message||'تعذر قراءة ملف النسخة الاحتياطية.',true)}finally{e.target.value=''}
+});
+$('#add-server').addEventListener('click',()=>openModal('إضافة سيرفر محلي',`<div class="form-group"><label>اسم السيرفر</label><input id="modal-server-name" class="field" maxlength="80" placeholder="مثال: Addons 977"></div><div class="form-group"><label>معرّف داخلي (اختياري)</label><input id="modal-server-id" class="field" maxlength="80" placeholder="مثال: server-01"></div>`,()=>{const name=$('#modal-server-name').value.trim();if(!name)throw Error('اكتب اسم السيرفر');const id=$('#modal-server-id').value.trim()||('local-'+Date.now());if(state.servers.some(s=>s.id===id))throw Error('هذا المعرّف موجود بالفعل');state.servers.push({id,name,status:'محلي'});renderServers();updateStats();persist()}));
+$('#add-user').addEventListener('click',()=>openModal('إضافة مستخدم تجريبي',`<div class="form-group"><label>اسم المستخدم</label><input id="modal-user-name" class="field" maxlength="80" placeholder="اسم العضو"></div><div class="form-group"><label>المعرّف</label><input id="modal-user-id" class="field" maxlength="80" placeholder="معرّف داخلي أو Discord ID"></div><div class="form-group"><label>الدور</label><select id="modal-user-role" class="field"><option>عضو</option><option>دعم فني</option><option>مشرف</option><option>مالك</option></select></div>`,()=>{const name=$('#modal-user-name').value.trim(),id=$('#modal-user-id').value.trim()||('demo-'+Date.now());if(!name)throw Error('اكتب اسم المستخدم');if(state.users.some(u=>u.id===id))throw Error('المعرّف موجود بالفعل');state.users.push({id,name,role:$('#modal-user-role').value,status:'نشط'});renderUsers();persist()}));
+$('#add-attendance').addEventListener('click',()=>openModal('إضافة سجل حضور',`<div class="form-group"><label>اسم الموظف</label><input id="modal-att-name" class="field" maxlength="80" placeholder="اسم الموظف"></div><div class="form-group"><label>الحالة</label><select id="modal-att-status" class="field"><option>حاضر</option><option>غائب</option><option>إجازة</option></select></div><div class="form-group"><label>التاريخ</label><input id="modal-att-date" class="field" type="date" value="${new Date().toISOString().slice(0,10)}"></div><div class="form-group"><label>ملاحظات</label><input id="modal-att-note" class="field" maxlength="180" placeholder="اختياري"></div>`,()=>{const name=$('#modal-att-name').value.trim();if(!name)throw Error('اكتب اسم الموظف');state.attendance.unshift({id:Date.now(),name,status:$('#modal-att-status').value,date:$('#modal-att-date').value,note:$('#modal-att-note').value.trim()});renderAttendance();persist()}));
+$('#modal-close').addEventListener('click',closeModal);$('#modal-cancel').addEventListener('click',closeModal);
+$('#modal-backdrop').addEventListener('click',e=>{if(e.target===$('#modal-backdrop'))closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+$('#modal-submit').addEventListener('click',()=>{if(!modalAction)return;try{modalAction();closeModal()}catch(err){toast(err.message||'تحقق من البيانات المدخلة.',true)}});
+$('#server-search').addEventListener('input',renderServers);$('#user-search').addEventListener('input',renderUsers);$('#attendance-search').addEventListener('input',renderAttendance);
+$('#save-tickets').addEventListener('click',()=>{saveInputs();const url=state.settings.ticketBanner;if(url){try{const u=new URL(url);if(!['http:','https:'].includes(u.protocol))throw Error();}catch{toast('رابط البانر غير صالح. استخدم رابط HTTPS أو HTTP.',true);return}}persist();$('#ticket-updated').textContent=new Date().toLocaleString('ar-SA')});
+$('#save-security').addEventListener('click',()=>{saveInputs();if(state.settings.securityThreshold<1||state.settings.securityThreshold>100){toast('حد التنبيهات يجب أن يكون بين 1 و100.',true);return}persist();toast('تم حفظ التفضيلات محلياً؛ الحماية الفعلية غير مفعلة.')});
+$('#save-welcome').addEventListener('click',()=>{saveInputs();persist();updateWelcomePreview()});
+$('#save-bot').addEventListener('click',()=>{saveInputs();persist();updateBotPreview()});
+$('#save-profile').addEventListener('click',()=>{saveInputs();persist();updateStats()});
+$('#save-settings').addEventListener('click',()=>{saveInputs();persist()});
+$('#reset-settings').addEventListener('click',resetState);
+$('#refresh-stats').addEventListener('click',()=>{updateStats();toast('تم تحديث ملخص الإعدادات المحلية.')});
+$('#export-attendance').addEventListener('click',exportCSV);
+$('#notifications').addEventListener('click',()=>toast('لا توجد تنبيهات حقيقية: لم يتم ربط النظام بخادم.'));
+$('#premium-config').addEventListener('click',()=>toast('أضف مزود الدفع في Backend أولاً. لن يتم تفعيل الاشتراكات من الواجهة وحدها.',true));
+$('#ticket-tabs').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(!b)return;ticketTab=b.dataset.tab;$$('#ticket-tabs .tab-btn').forEach(x=>x.classList.toggle('active',x===b));const titles={support:'إعدادات تذاكر الدعم',vip:'إعدادات رومات VIP',buttons:'إعدادات الأزرار التفاعلية'};$('#ticket-tab-title').textContent=titles[ticketTab];toast(`تم فتح تبويب ${titles[ticketTab]}؛ الحقول المشتركة ظاهرة لحين ربط الإعدادات التفصيلية.`)});
+$('#bot-image').addEventListener('change',e=>{const file=e.target.files[0];if(!file)return;if(file.size>8*1024*1024){e.target.value='';toast('حجم الصورة يجب ألا يتجاوز 8MB.',true);return}if(!/^image\/(png|jpeg|gif|webp)$/.test(file.type)){e.target.value='';toast('صيغة الصورة غير مدعومة.',true);return}const reader=new FileReader();reader.onload=()=>{botImageData=reader.result;$('#bot-preview-image').src=botImageData;$('#bot-preview-image').style.display='block';toast('تم تحديث معاينة الصورة محلياً فقط.')};reader.readAsDataURL(file)});
+$$('[data-setting]').forEach(el=>{el.addEventListener('change',()=>{const key=el.dataset.setting;if(el.type==='checkbox')state.settings[key]=el.checked;else state.settings[key]=el.type==='number'?Number(el.value):el.value;updateStats()})});
+hydrateInputs();bindSettings();setTheme(!!state.settings.lightMode);renderServers();renderUsers();renderAttendance();updateStats();updateWelcomePreview();updateBotPreview();
+})();
+</script>
+</body>
+</html>
+'''
+
+(out / "index.html").write_text(html, encoding="utf-8")
+
+readme = """# RKO Supreme Dashboard — النسخة المصححة
+
+هذه نسخة HTML مستقلة مبنية على الواجهة القديمة، مع إصلاحات للعرض والتجاوب والتفاعلات المحلية.
+
+## التشغيل
+1. فك ضغط الملف.
+2. افتح `index.html` في متصفح حديث، أو شغّله عبر Live Server.
+3. البيانات والإعدادات تُحفظ في `localStorage` على المتصفح الحالي.
+4. استخدم صفحة **الإعدادات والنسخ الاحتياطي** لتصدير JSON أو استيراده.
+
+## إصلاحات مهمة
+- تخطيط RTL عربي ومتجاوب مع الجوال، وقائمة جانبية قابلة للفتح.
+- تنقل بين الصفحات مع تحديث عنوان الصفحة والحالة النشطة.
+- حفظ إعدادات الواجهة محلياً، ومظهر فاتح/داكن.
+- CRUD محلي للسيرفرات والمستخدمين وسجلات الحضور التجريبية.
+- بحث وتصدير CSV للحضور.
+- نسخ احتياطي واستعادة JSON مع فحص صيغة الملف والحجم.
+- التحقق من رابط البانر وحجم/نوع صورة المعاينة.
+- إصلاح تفاعلات الأزرار وعرض التنبيهات والنوافذ المنبثقة.
+- لا تدّعي الواجهة نجاح نشر Discord أو تفعيل الحماية أو نجاح الدفع دون تكامل حقيقي.
+
+## ما يلزم لتفعيل Discord والدفع فعلياً
+هذه الواجهة لا تتصل بـ Discord ولا تحتوي Backend. لتفعيل الوظائف الحقيقية يلزم:
+- Backend (مثلاً Node.js/Express أو Next.js Route Handlers).
+- تسجيل دخول OAuth2 لـ Discord والتحقق من الجلسة والصلاحيات في الخادم.
+- تخزين إعدادات السيرفر في قاعدة بيانات.
+- Discord bot يعمل بالخلفية لتنفيذ أوامر التذاكر والترحيب والحضور والحماية.
+- مزود دفع موثوق مع تحقق server-side وwebhooks؛ لا تحفظ أسرار أو Bot Token في HTML أو React client.
+- حماية endpoints من CSRF/طلبات غير مصرح بها، وتسجيل audit log وحدود للمحاولات.
+
+## ملاحظة
+البيانات الافتراضية تجريبية. هذا الملف ليس بديلاً عن مراجعة أمنية أو تكامل API.
+"""
+(out / "README.md").write_text(readme, encoding="utf-8")
+zip_path=Path("/mnt/data/rko-dashboard-fixed.zip")
+with zipfile.ZipFile(zip_path,"w",zipfile.ZIP_DEFLATED) as z:
+    z.write(out/"index.html","rko-dashboard-fixed/index.html")
+    z.write(out/"README.md","rko-dashboard-fixed/README.md")
+print("Created", zip_path, "html bytes", len(html.encode()), "lines", html.count("\n")+1)
