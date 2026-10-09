@@ -1,140 +1,158 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RKO // SUPREME - Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --bg-deep: #020408;
-            --bg-panel: rgba(8, 13, 24, 0.98);
-            --accent-cyan: #38bdf8;
-            --accent-gold: #fbbf24;
-            --accent-green: #22c55e;
-            --accent-red: #ef4444;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-        }
+import os, zipfile, textwrap
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { background-color: var(--bg-deep); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+base = "/mnt/data/server-admin-dashboard"
+os.makedirs(base, exist_ok=True)
 
-        .sidebar { width: 310px; background: rgba(3, 5, 10, 0.99); border-right: 1px solid rgba(255, 255, 255, 0.06); display: flex; flex-direction: column; height: 100vh; z-index: 100; }
-        .sidebar-brand { padding: 22px; font-size: 20px; font-weight: 900; color: var(--accent-cyan); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .sidebar-menu { list-style: none; padding: 15px; overflow-y: auto; flex: 1; }
-        .sidebar-menu::-webkit-scrollbar { width: 4px; }
-        .sidebar-menu::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.3); border-radius: 4px; }
-        
-        .menu-category { font-size: 11px; color: var(--text-muted); margin: 18px 10px 8px 0; font-weight: 800; text-transform: uppercase; }
-        .sidebar-menu li { padding: 11px 15px; border-radius: 10px; margin-bottom: 5px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 14px; color: var(--text-muted); font-size: 14px; font-weight: 600; }
-        .sidebar-menu li:hover { background: rgba(56, 189, 248, 0.08); color: var(--accent-cyan); }
-        .sidebar-menu li.active { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #fff; }
-        .badge-god { background: rgba(251, 191, 36, 0.2); color: #fde047; font-size: 9px; padding: 3px 8px; border-radius: 6px; margin-left: auto; font-weight: 800; }
+app = r'''import React, { useEffect, useMemo, useState } from "react";
+import "./dashboard.css";
 
-        .main-wrapper { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        header { background: rgba(8, 13, 24, 0.9); padding: 18px 35px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; height: 75px; }
-        .header-title { font-size: 15px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 10px; }
-        .header-title span { color: var(--accent-cyan); }
-        
-        .user-badge { display: flex; align-items: center; gap: 12px; background: rgba(255, 255, 255, 0.03); padding: 6px 18px; border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.08); }
-        .avatar-glow { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(45deg, var(--accent-cyan), var(--accent-gold)); display: flex; align-items: center; justify-content: center; font-weight: 900; color: #000; font-size: 12px; }
+const initialTemplates = [
+  { id: 1, name: "سيرفر عام", category: "المجتمع", description: "سيرفر مجتمعي متكامل مع قنوات أساسية.", channels: 85, roles: 15, members: 47, icon: "🎮", featured: true },
+  { id: 2, name: "سيرفر محترفين", category: "الألعاب", description: "مساحة منظمة للاعبين والفرق التنافسية.", channels: 24, roles: 5, members: 9, icon: "🎮", featured: true },
+  { id: 3, name: "سيرفر لك ولأصدقائك", category: "المجتمع", description: "جلسات يومية وغرف صوتية وذكريات مشتركة.", channels: 56, roles: 12, members: 14, icon: "🧑‍🤝‍🧑", featured: true },
+  { id: 4, name: "سيرفر المجتمعات", category: "الأعمال", description: "هيكل مرتب للمجتمعات والمشاريع.", channels: 31, roles: 5, members: 12, icon: "🗂️", featured: false },
+  { id: 5, name: "سيرفر كويسين وألعاب", category: "الألعاب", description: "قنوات ألعاب ومحادثات وترتيب واضح.", channels: 101, roles: 22, members: 35, icon: "💎", featured: true },
+  { id: 6, name: "سيرفر بسيط", category: "أخرى", description: "بداية سريعة بقنوات أساسية قابلة للتخصيص.", channels: 6, roles: 4, members: 25, icon: "🗂️", featured: false },
+];
+const navGroups = [
+  { title: "المجتمع", items: [["الترحيب والمغادرة", "heart"], ["نظام المستويات", "trending-up"], ["السحوبات", "gift"], ["إدارة الرتب", "users"], ["الأذكار", "book-open"], ["التفاعل", "mouse-pointer"], ["الرد التلقائي", "message-square"]] },
+  { title: "التخصيص", items: [["التوظيف", "crown"], ["القنوات الصوتية المؤقتة", "radio"], ["نظام التذاكر", "ticket"], ["التقييمات", "clipboard-list"], ["الإيمبدات", "layers"], ["الحضور", "clock"]] },
+  { title: "الإدارة", items: [["أدوات لوحة التحكم", "sliders"], ["القوالب", "layout-grid"]] },
+];
+const initialBoards = [{ id: 1, name: "الحضور الرئيسي", shortcut: "Sign In / Sign Out", enabled: true, roles: ["Admin", "Moderator"], serviceRole: "Member" }];
+const initialPeople = [{ id: "1238026112622137368", name: "مستخدم تجريبي", allowed: true }];
 
-        .content-area { padding: 35px; overflow-y: auto; flex: 1; }
-        .section-view { display: none; }
-        .section-view.active { display: block !important; animation: godFade 0.3s ease; }
-        @keyframes godFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+function load(key, fallback) {
+  try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; }
+  catch { return fallback; }
+}
+function Icon({ name = "dot", size = 18 }) {
+  const paths = {
+    grid: <><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></>,
+    home: <><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9M9 20v-7h6v7"/></>,
+    users: <><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></>,
+    clock: <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></>,
+    ticket: <><path d="M3 8a2 2 0 0 0 0 4v4h18v-4a2 2 0 0 1 0-4V4H3z"/><path d="M13 4v2m0 4v2m0 4v2"/></>,
+    layers: <><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/></>,
+    settings: <><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.7a8 8 0 0 1-1.6.9L16 21h-8l-.2-2.2a8 8 0 0 1-1.6-.9l-1.7.7-1.4-2.4 1.4-1.1a8 8 0 0 1 0-1.9l-1.4-1.1 1.4-2.4 1.7.7a8 8 0 0 1 1.6-.9L8 7h8l.2 2.2a8 8 0 0 1 1.6.9l1.7-.7 1.4 2.4-1.4 1.1a8 8 0 0 1-.1 2.1Z"/></>,
+    heart: <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/>,
+    "trending-up": <><path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/></>,
+    gift: <><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M2 8h20v4H2zM12 8H7a2.5 2.5 0 1 1 2.5-2.5C9.5 7 12 8 12 8Zm0 0h5a2.5 2.5 0 1 0-2.5-2.5C14.5 7 12 8 12 8Z"/></>,
+    "book-open": <><path d="M12 7v14M3 4h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5v15h-5a4 4 0 0 0-4 2 4 4 0 0 0-4-2H3z"/></>,
+    "mouse-pointer": <path d="m5 3 14 11-7 1-3 6z"/>,
+    "message-square": <path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 9 9 0 0 1-4-.9L3 21l1.9-5.5a9 9 0 0 1-.9-4A8.5 8.5 0 0 1 12.5 3h.5a8.5 8.5 0 0 1 8 8z"/>,
+    crown: <><path d="m2 7 5 4 5-8 5 8 5-4-2 13H4z"/><path d="M4 21h16"/></>,
+    radio: <><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8a6 6 0 0 1 0 8.4M7.8 16.2a6 6 0 0 1 0-8.4M19 5a10 10 0 0 1 0 14M5 19A10 10 0 0 1 5 5"/></>,
+    "clipboard-list": <><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2M8 10h8M8 14h8M8 18h4"/></>,
+    "layout-grid": <><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="11" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/></>,
+    search: <><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></>,
+    plus: <><path d="M12 5v14M5 12h14"/></>,
+    trash: <><path d="M3 6h18M8 6V4h8v2m3 0-1 15H6L5 6m4 4v7m6-7v7"/></>,
+    edit: <><path d="m15 5 4 4M4 20l4-.8L19 8a2.8 2.8 0 0 0-4-4L4 15z"/></>,
+    download: <><path d="M12 3v12m-5-5 5 5 5-5"/><path d="M4 17v4h16v-4"/></>,
+    shield: <><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/></>,
+    bell: <><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></>,
+    logout: <><path d="M10 17l5-5-5-5M15 12H3"/><path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7"/></>,
+    check: <path d="m5 12 4 4L19 6"/>,
+    close: <><path d="m18 6-12 12M6 6l12 12"/></>,
+    chart: <><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-7"/></>,
+    dot: <circle cx="12" cy="12" r="8"/>
+  };
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name] || paths.dot}</svg>;
+}
 
-        .god-panel { background: var(--bg-panel); border: 1px solid rgba(255,255,255,0.06); border-radius: 20px; padding: 30px; margin-bottom: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
-        .god-panel h3 { font-size: 18px; color: #fff; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 12px; }
+function Toggle({ checked, onChange }) {
+  return <button type="button" className={`toggle ${checked ? "is-on" : ""}`} onClick={() => onChange(!checked)} aria-pressed={checked}><span /></button>;
+}
 
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-muted); font-weight: 700; }
-        .god-input, .god-textarea { width: 100%; background: rgba(2, 4, 8, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); padding: 14px 18px; border-radius: 12px; color: #fff; font-size: 14px; }
-        .god-textarea { height: 110px; resize: none; }
+export default function ServerAdminDashboard() {
+  const [active, setActive] = useState("نظرة عامة");
+  const [templates, setTemplates] = useState(() => load("sad_templates", initialTemplates));
+  const [boards, setBoards] = useState(() => load("sad_boards", initialBoards));
+  const [people, setPeople] = useState(() => load("sad_people", initialPeople));
+  const [attendanceEnabled, setAttendanceEnabled] = useState(() => load("sad_attendance_enabled", true));
+  const [templateQuery, setTemplateQuery] = useState("");
+  const [category, setCategory] = useState("الكل");
+  const [modal, setModal] = useState(null);
+  const [toast, setToast] = useState("");
+  const [boardName, setBoardName] = useState("");
+  const [personQuery, setPersonQuery] = useState("");
+  const [settings, setSettings] = useState(() => load("sad_settings", { serverName: "السيرفر", language: "العربية", notifications: true, compact: false }));
+  const [draftTemplate, setDraftTemplate] = useState({ name: "", category: "المجتمع", description: "", icon: "🎮" });
 
-        .god-btn { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #fff; border: none; padding: 14px 28px; border-radius: 12px; font-weight: 800; font-size: 15px; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; }
-        .god-btn:hover { box-shadow: 0 8px 25px rgba(2, 132, 199, 0.6); }
+  useEffect(() => { localStorage.setItem("sad_templates", JSON.stringify(templates)); }, [templates]);
+  useEffect(() => { localStorage.setItem("sad_boards", JSON.stringify(boards)); }, [boards]);
+  useEffect(() => { localStorage.setItem("sad_people", JSON.stringify(people)); }, [people]);
+  useEffect(() => { localStorage.setItem("sad_attendance_enabled", JSON.stringify(attendanceEnabled)); }, [attendanceEnabled]);
+  useEffect(() => { localStorage.setItem("sad_settings", JSON.stringify(settings)); }, [settings]);
 
-        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #1e293b; transition: .3s; border-radius: 26px; border: 1px solid rgba(255,255,255,0.1); }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--accent-cyan); }
-        input:checked + .slider:before { transform: translateX(24px); }
+  const filteredTemplates = useMemo(() => templates.filter(t => (category === "الكل" || t.category === category) && `${t.name} ${t.description}`.toLowerCase().includes(templateQuery.toLowerCase())), [templates, category, templateQuery]);
+  const notify = (msg) => { setToast(msg); window.setTimeout(() => setToast(""), 2600); };
+  const categories = ["الكل", "الألعاب", "المجتمع", "الأعمال", "التعليم", "الإبداع", "أخرى"];
+  const navTo = (label) => { setActive(label); setModal(null); };
 
-        .preview-box { background: rgba(2, 4, 8, 0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 20px; margin-top: 15px; }
+  function createTemplate(e) {
+    e.preventDefault();
+    if (!draftTemplate.name.trim()) return;
+    setTemplates(prev => [{ ...draftTemplate, id: Date.now(), channels: 0, roles: 0, members: 0, featured: false }, ...prev]);
+    setDraftTemplate({ name: "", category: "المجتمع", description: "", icon: "🎮" });
+    setModal(null); notify("تم إنشاء القالب");
+  }
+  function exportData() {
+    const blob = new Blob([JSON.stringify({ templates, boards, people, settings }, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob); const a = document.createElement("a");
+    a.href = url; a.download = "server-dashboard-backup.json"; a.click(); URL.revokeObjectURL(url); notify("تم تصدير نسخة احتياطية");
+  }
+  function addBoard(e) {
+    e.preventDefault(); if (!boardName.trim()) return;
+    setBoards(prev => [...prev, { id: Date.now(), name: boardName.trim(), shortcut: "Sign In / Sign Out", enabled: true, roles: ["Admin"], serviceRole: "Member" }]);
+    setBoardName(""); setModal(null); notify("تمت إضافة اللوحة");
+  }
+  function addPerson(e) {
+    e.preventDefault(); const name = personQuery.trim(); if (!name) return;
+    setPeople(prev => [...prev, { id: String(Date.now()), name, allowed: true }]); setPersonQuery(""); notify("تمت إضافة المستخدم إلى القائمة");
+  }
 
-        #god-toast { position: fixed; bottom: 35px; left: 35px; background: rgba(8, 13, 24, 0.98); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); padding: 16px 30px; border-radius: 14px; font-weight: 800; display: none; z-index: 3000; }
-    </style>
-</head>
-<body>
+  const navIcon = active === "نظرة عامة" ? "home" : active.includes("قالب") ? "layout-grid" : active.includes("حضور") ? "clock" : active.includes("رتب") ? "users" : active.includes("تذكرة") ? "ticket" : active.includes("إعداد") ? "settings" : "layers";
 
-    <div class="main-wrapper">
-        <header>
-            <div class="header-title">
-                لوحة القيادة لـ Addons 977 / <span id="header-tracker">الرد التلقائي</span>
-            </div>
-            <div class="user-badge">
-                <div class="avatar-glow">RK</div>
-                <span style="font-weight: 700; font-size: 14px;">راكان (المالك)</span>
-            </div>
-        </header>
+  return <div className="sad" dir="rtl">
+    <aside className="sad-sidebar">
+      <div className="brand">
+        <div className="brand-mark"><Icon name="layers" size={22}/></div>
+        <div><strong>{settings.serverName || "السيرفر"}</strong><small>لوحة الإدارة</small></div>
+        <span className="online-dot" />
+      </div>
+      <button className="server-select" onClick={() => notify("اربط اختيار السيرفر بواجهة الـ API الخاصة بك")}>
+        <span className="server-avatar">S</span><span>تغيير السيرفر</span><span className="chevron">⌄</span>
+      </button>
+      <div className="side-scroll">
+        <button className={`nav-item ${active === "نظرة عامة" ? "active" : ""}`} onClick={() => navTo("نظرة عامة")}><Icon name="home"/>نظرة عامة</button>
+        {navGroups.map(group => <div className="nav-group" key={group.title}><div className="nav-label">{group.title}</div>{group.items.map(([label, icon]) => <button key={label} className={`nav-item ${active === label ? "active" : ""}`} onClick={() => navTo(label)}><Icon name={icon}/><span>{label}</span>{["السحوبات", "إدارة الرتب", "الحضور"].includes(label) && <i className="new-tag">جديد</i>}</button>)}</div>)}
+        <button className={`nav-item ${active === "الإعدادات" ? "active" : ""}`} onClick={() => navTo("الإعدادات")}><Icon name="settings"/>الإعدادات</button>
+      </div>
+      <div className="sidebar-bottom"><div className="avatar">A</div><div className="profile"><strong>مدير السيرفر</strong><small>صلاحيات كاملة</small></div><button className="icon-button" onClick={() => notify("أضف نظام تسجيل الدخول الخاص بك")} aria-label="تسجيل الخروج"><Icon name="logout"/></button></div>
+    </aside>
 
-        <div class="content-area">
-            <div class="god-panel">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h3><i class="fa-solid fa-reply"></i> المُشغِّل (Auto-Reply)</h3>
-                    <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-                </div>
-                
-                <div class="form-group">
-                    <label>الاسم (يظهر في لوحة التحكم فقط، ويُسفي الرد في قائمتك)</label>
-                    <input type="text" class="god-input" placeholder="مثال: التحية">
-                </div>
+    <main className="sad-main">
+      <header className="topbar">
+        <div className="breadcrumbs"><span>الإدارة</span><b>/</b><strong>{active}</strong></div>
+        <div className="top-actions"><span className="status-pill"><i/> النظام يعمل</span><button className="icon-button" onClick={() => notify("لا توجد تنبيهات جديدة")} aria-label="التنبيهات"><Icon name="bell"/></button><button className="user-chip" onClick={() => navTo("الإعدادات")}><span className="avatar small">A</span><span>المسؤول</span><span>⌄</span></button></div>
+      </header>
 
-                <div class="form-group">
-                    <label>التشغيل عند</label>
-                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                        <button class="god-btn" style="padding: 8px 16px; font-size: 13px;">T نص</button>
-                        <button class="god-btn" style="padding: 8px 16px; font-size: 13px; background: #1e293b;"># قناة</button>
-                    </div>
-                    <input type="text" class="god-input" placeholder="مثال: السلام عليكم">
-                </div>
+      <div className="page-wrap">
+        {active === "نظرة عامة" && <>
+          <div className="welcome-row"><div><div className="eyebrow"><span className="eyebrow-line"/> مركز التحكم</div><h1>نظرة عامة <span className="cyan">.</span></h1><p>تابع حالة السيرفر وأدوات الإدارة من مكان واحد.</p></div><button className="primary-btn" onClick={() => navTo("القوالب")}><Icon name="layout-grid"/> استكشاف القوالب</button></div>
+          <section className="stats-grid">
+            <Stat title="إجمالي الأعضاء" value="2,481" change="+12.8%" icon="users" note="مقارنة بالأسبوع الماضي"/>
+            <Stat title="الأعضاء المتصلون" value="386" change="مباشر" icon="activity" note="يتطلب ربط بيانات السيرفر"/>
+            <Stat title="التذاكر المفتوحة" value="18" change="4 جديدة" icon="ticket" note="آخر 24 ساعة"/>
+            <Stat title="لوحات الحضور" value={boards.length} change={attendanceEnabled ? "مفعّلة" : "متوقفة"} icon="clock" note="إعدادات الحضور"/>
+          </section>
+          <div className="content-grid">
+            <section className="panel activity-panel"><div className="panel-heading"><div><h2>نشاط السيرفر</h2><p>نظرة توضيحية على نشاط الأسبوع</p></div><select aria-label="الفترة"><option>آخر 7 أيام</option><option>آخر 30 يومًا</option></select></div><div className="chart-area"><div className="chart-y"><span>500</span><span>400</span><span>300</span><span>200</span><span>100</span></div><div className="chart"><div className="chart-grid"><i/><i/><i/><i/><i/></div><svg viewBox="0 0 700 230" preserveAspectRatio="none" className="chart-svg"><defs><linearGradient id="chartFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#00c8e8" stopOpacity=".26"/><stop offset="100%" stopColor="#00c8e8" stopOpacity="0"/></linearGradient></defs><path d="M0 180 C35 172 48 145 90 154 S140 188 185 135 S245 120 280 140 S330 95 370 111 S420 155 465 93 S530 118 565 70 S620 95 650 47 S680 54 700 25 L700 230 L0 230Z" fill="url(#chartFill)"/><path d="M0 180 C35 172 48 145 90 154 S140 188 185 135 S245 120 280 140 S330 95 370 111 S420 155 465 93 S530 118 565 70 S620 95 650 47 S680 54 700 25" fill="none" stroke="#00c8e8" strokeWidth="3" vectorEffect="non-scaling-stroke"/></svg><div className="chart-x"><span>السبت</span><span>الأحد</span><span>الإثنين</span><span>الثلاثاء</span><span>الأربعاء</span><span>الخميس</span><span>الجمعة</span></div></div></div><div className="chart-foot"><span><i className="legend-dot"/> نشاط الأعضاء</span><span className="muted">بيانات تجريبية — اربط مصدر البيانات لعرض الأرقام الفعلية</span></div></section>
+            <section className="panel quick-panel"><div className="panel-heading"><div><h2>الوصول السريع</h2><p>الأدوات الأكثر استخدامًا</p></div><Icon name="grid"/></div><div className="quick-list">{[["القوالب","layout-grid","إدارة القوالب الجاهزة"],["الحضور","clock","السجلات واللوحات"],["إدارة الرتب","users","صلاحيات المستخدمين"],["الإعدادات","settings","تخصيص لوحة التحكم"]].map(([name, icon, desc]) => <button key={name} className="quick-link" onClick={() => navTo(name)}><span className="quick-icon"><Icon name={icon}/></span><span className="quick-text"><strong>{name}</strong><small>{desc}</small></span><b>←</b></button>)}</div></section>
+          </div>
+          <section className="panel recent-panel"><div className="panel-heading"><div><h2>آخر النشاطات</h2><p>ملخص تغييرات اللوحة محليًا</p></div><button className="text-btn" onClick={() => navTo("سجل النشاط")}>عرض السجل ←</button></div><div className="empty-activity"><span className="empty-icon"><Icon name="clipboard-list" size={23}/></span><strong>كل شيء هادئ حتى الآن</strong><p>سيظهر هنا سجل الأحداث عند ربط العمليات بالخادم.</p></div></section>
+        </>}
 
-                <div class="form-group">
-                    <label>الرد (Embed & Message Builder)</label>
-                    <div class="preview-box">
-                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                            <div class="avatar-glow" style="width: 28px; height: 28px; font-size: 10px;">ZMN</div>
-                            <span style="font-weight: 700; font-size: 13px;">ZMN Bot</span>
-                            <span style="background: #5865f2; color: #fff; font-size: 9px; padding: 2px 6px; border-radius: 4px;">BOT</span>
-                            <span style="font-size: 11px; color: var(--text-muted);">اليوم الساعة 12:00 ص</span>
-                        </div>
-                        <textarea class="god-textarea" placeholder="اكتب رسالتك هنا..."></textarea>
-                    </div>
-                    <button class="god-btn" style="margin-top: 15px;"><i class="fa-solid fa-plus"></i> إضافة إمبد</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="sidebar" style="order: 2;">
-        <div class="sidebar-brand">
-            <i class="fa-solid fa-crown" style="color: var(--accent-gold);"></i> RKO // SUPREME
-        </div>
-        <ul class="sidebar-menu">
-            <div class="menu-category">المجتمع</div>
-            <li class="active"><i class="fa-solid fa-reply"></i> الرد التلقائي <span class="badge-god">NEW</span></li>
-            <li><i class="fa-solid fa-briefcase"></i> التوظيف</li>
-            <li><i class="fa-solid fa-microphone"></i> القنوات الصوتية المؤقتة</li>
-            <div class="menu-category">التخصيص والنظام</div>
-            <li><i class="fa-solid fa-headset"></i> نظام التذاكر <span class="badge-god" style="background:rgba(56,189,248,0.2); color:var(--accent-cyan);">VIP</span></li>
-            <li><i class="fa-solid fa-file-lines"></i> التقديمات <span class="badge-god">NEW</span></li>
-        </ul>
-    </div>
-
-    <div id="god-toast"></div>
-</body>
-</html>
+        {active === "القوالب" && <><div className="welcome-row"><div><div className="eyebrow"><span className="eyebrow-line"/> مكتبة القوالب</div><h1>القوالب <span className="cyan">.</span></h1><p>اكتشف القوالب وأنشئ نسخك الخاصة لإدارة مجتمعك.</p></div><button className="primary-btn" onClick={() => setModal("template")}><Icon name="plus"/> قالب جديد</button></div><div className="toolbar"><div className="search-box"><Icon name="search"/><input value={templateQuery} onChange={e => setTemplateQuery(e.target.value)} placeholder="ابحث عن القوالب..."/></div><div className="filters">{categories.map(c => <button key={c} onClick={() => setCategory(c)} className={category === c ? "filter active" : "filter"}>{c}</button>)}</div><span className="result-count">{filteredTemplates.length} قوالب</span></div><div className="template-grid">{filteredTemplates.map(t => <article className="template-card" key={t.id}><div className="template-top"><span className="template-emoji">{t.icon}</span>{t.featured && <span className="featured"><Icon name="crown" size={13}/> مميز</span>}<button className="dots" onClick={() => { if (window.confirm(`حذف القالب «${t.name}»؟`)) { setTemplates(prev => prev.filter(x => x.id !== t.id)); notify("تم حذف القالب"); } }} aria-label="حذف القالب"><Icon name="trash" size={16}/
